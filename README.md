@@ -30,6 +30,10 @@ it is invoked by typing
 
 `$ ./xmppmote.py <user> <password>`
 
+After having done this, the bot should be online in your chat client, and you can chat away
+with it until your heart is content; at which point you can type **bye** into your client to
+terminate the bot.
+
 final notes
 -----------
 
