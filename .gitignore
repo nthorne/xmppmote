@@ -25,3 +25,10 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+
+# vim swap files
+.*.sw?
+
+# private wrapper script that supplies u/p
+wrapper
+
