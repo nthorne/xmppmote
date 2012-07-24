@@ -58,7 +58,7 @@ def setup_logging():
 
     syslog_handler.setLevel(logging.INFO)
 
-    formatter = logging.Formatter('%(asctime)-15s %(message)s')
+    formatter = logging.Formatter('%(asctime)-15s XMPPMote: %(message)s')
     syslog_handler.setFormatter(formatter)
 
     logger.addHandler(syslog_handler)
