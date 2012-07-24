@@ -24,6 +24,7 @@ protocol.  """
 
 import sys
 import logging
+import logging.handlers
 import locale
 import codecs
 
@@ -43,9 +44,29 @@ def set_encoding():
 def setup_logging():
     """ Set logging format and log level in order to get nicely written
     log statements from both PyXMPP and XMPPMote. """
-    logging.basicConfig(format='%(asctime)-15s %(message)s')
+
+    logging.basicConfig(format = '%(asctime)-15s %(message)s')
+
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
+
+    logger.info(u"starting application..")
+
+    syslog_handler = logging.handlers.SysLogHandler(
+            facility = logging.handlers.SysLogHandler.LOG_DAEMON,
+            address = "/dev/log")
+
+    syslog_handler.setLevel(logging.INFO)
+
+    formatter = logging.Formatter('%(asctime)-15s %(message)s')
+    syslog_handler.setFormatter(formatter)
+
+    logger.addHandler(syslog_handler)
+
+    logging.info(u"redirecting logs to syslog..")
+
+    # remove the StreamHandler for syslog-only logging
+    logger.removeHandler(logger.handlers[0])
 
     return logger
 
@@ -96,7 +117,6 @@ def main():
     usr, pwd = parse_arguments(sys.argv)
 
     connect_client(usr, pwd, logger)
-    logger.info(u"exiting...")
 
 
 if "__main__" == __name__:
