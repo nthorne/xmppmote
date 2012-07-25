@@ -38,6 +38,5 @@ final notes
 -----------
 
 This software is in early beta, so don't expect much regarding documentation and user friendliness;
-also, important features such as a sane configuration system, daemonization and logging is not
-yet in place either.
+also, important features such as a sane configuration system and daemonization is not yet in place either.
 
