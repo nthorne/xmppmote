@@ -32,6 +32,8 @@ from pyxmpp.all import JID
 
 from bot.client import Client
 
+from configuration import credentials
+
 def set_encoding():
     """ Convert unicode input to current locale. """
     locale.setlocale(locale.LC_CTYPE, "")
@@ -72,30 +74,15 @@ def setup_logging():
 
 def display_usage(appname):
     """ Display the usage screen. """
-    print u"Usage: %s JID [PASSWORD]" % (appname)
-    print u"Connect the XMPPMote bot using JID and the optional password."
-    print u"If no password is given, it will be read from stdin."
+    print u"Usage: %s [-h|--help]" % (appname)
+    print u"Connect the XMPPMote bot."
 
 def parse_arguments(args):
     """ Parse command line arguments. """
-    if not args:
-        sys.stderr.write("error: invalid arguments list")
-        sys.exit(1)
-    elif 2 == len(args):
+    if 2 == len(args):
         if "-h" == args[1] or "--help" == args[1]:
             display_usage(args[0])
             sys.exit(0)
-
-        usr = args[1]
-        pwd = raw_input("Password:")
-    elif 3 == len(args):
-        usr = args[1]
-        pwd = args[2]
-    else:
-        display_usage(args[0])
-        sys.exit(1)
-
-    return (usr, pwd)
 
 def connect_client(usr, pwd, logger):
     """ Helper function used for connecting to the network. """
@@ -112,9 +99,11 @@ def main():
     """ main functionalities placed here in order to prevent pollution
         of the module-level namespace. """
     set_encoding()
-    logger = setup_logging()
 
-    usr, pwd = parse_arguments(sys.argv)
+    parse_arguments(sys.argv)
+    usr, pwd = credentials.get_credentials('.credentials')
+
+    logger = setup_logging()
 
     connect_client(usr, pwd, logger)
 

@@ -4,6 +4,4 @@
 # vim swap files
 .*.sw?
 
-# private wrapper script that supplies u/p
-wrapper
-
+.credentials
