@@ -37,7 +37,7 @@ from configuration import commands
 import unittest
 
 class ClientTest(mox.MoxTestBase):
-    """ Testing the trickier parts of the xmppmote module """
+    """ Testing the trickier parts of the Client module """
 
     __usr = "JID"
     __pwd = "PWD"

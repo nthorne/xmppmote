@@ -31,8 +31,8 @@ import unittest
 from versionhandler import VersionHandler
 
 
-class ClientTest(mox.MoxTestBase):
-    """ This type provides tests cases for the Client type. """ 
+class VersionHandlerTest(mox.MoxTestBase):
+    """ This type provides tests cases for the VersionHandler type. """ 
     def test_get_features(self):
         """ Make sure that we have a handler for each feature. """
         mock_client = self.mox.CreateMockAnything()
