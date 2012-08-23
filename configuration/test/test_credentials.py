@@ -19,6 +19,11 @@
 
 """ This module tests the credentials module. """
 
+# we import the builtin module here, since we need to refer to it explicitly,
+# rather than by __builtins__ when we overload open and raw_input, since
+# __builtins__ refers to the module when this script is a main script, and to a
+# dict when this script is not a main script..
+import __builtin__
 import sys
 import os
 
@@ -42,7 +47,7 @@ class CredentialsTest(mox.MoxTestBase):
         credentials_file = ".credentials"
 
 
-        self.mox.StubOutWithMock(__builtins__, "open")
+        self.mox.StubOutWithMock(__builtin__, "open")
         mock_file = self.mox.CreateMockAnything()
 
         open(credentials_file).AndReturn(mock_file)
@@ -64,8 +69,8 @@ class CredentialsTest(mox.MoxTestBase):
         credentials_file = ".credentials"
 
 
-        self.mox.StubOutWithMock(__builtins__, "open")
-        self.mox.StubOutWithMock(__builtins__, "raw_input")
+        self.mox.StubOutWithMock(__builtin__, "open")
+        self.mox.StubOutWithMock(__builtin__, "raw_input")
         mock_file = self.mox.CreateMockAnything()
 
         open(credentials_file).AndRaise(IOError)
@@ -93,8 +98,8 @@ class CredentialsTest(mox.MoxTestBase):
         credentials_file = ".credentials"
 
 
-        self.mox.StubOutWithMock(__builtins__, "open")
-        self.mox.StubOutWithMock(__builtins__, "raw_input")
+        self.mox.StubOutWithMock(__builtin__, "open")
+        self.mox.StubOutWithMock(__builtin__, "raw_input")
         mock_file = self.mox.CreateMockAnything()
 
         open(credentials_file).AndReturn(mock_file)
