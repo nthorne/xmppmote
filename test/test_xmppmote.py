@@ -44,31 +44,40 @@ class XMPPMoteTest(mox.MoxTestBase):
         """ Test the parse_arguments function with [0, 4] arguments
             as well as the help flags. """
         arguments = None
-        self.assertRaises(SystemExit, xmppmote.parse_arguments, arguments)
+        with self.assertRaises(SystemExit) as cm:
+            xmppmote.parse_arguments(arguments)
+        self.assertEqual(cm.exception.code, 1)
 
         arguments = []
-        self.assertRaises(SystemExit, xmppmote.parse_arguments, arguments)
+        with self.assertRaises(SystemExit) as cm:
+            xmppmote.parse_arguments(arguments)
+        self.assertEqual(cm.exception.code, 1)
 
         arguments = [self.__app]
-        self.assertRaises(SystemExit, xmppmote.parse_arguments, arguments)
-
-        xmppmote.raw_input = lambda _: self.__pwd
-        arguments = [self.__app, self.__usr]
-        self.assertEquals((self.__usr, self.__pwd),
-                xmppmote.parse_arguments(arguments))
+        try:
+            xmppmote.parse_arguments(arguments)
+        except Exception:
+            self.fail("Unexpected assertion")
 
         arguments = [self.__app, "-h"]
-        self.assertRaises(SystemExit, xmppmote.parse_arguments, arguments)
+        with self.assertRaises(SystemExit) as cm:
+            xmppmote.parse_arguments(arguments)
+        self.assertEqual(cm.exception.code, 0)
 
         arguments = [self.__app, "--help"]
-        self.assertRaises(SystemExit, xmppmote.parse_arguments, arguments)
+        with self.assertRaises(SystemExit) as cm:
+            xmppmote.parse_arguments(arguments)
+        self.assertEqual(cm.exception.code, 0)
 
         arguments = [self.__app, self.__usr, self.__pwd]
-        self.assertEquals((self.__usr, self.__pwd),
-                xmppmote.parse_arguments(arguments))
+        with self.assertRaises(SystemExit) as cm:
+            xmppmote.parse_arguments(arguments)
+        self.assertEqual(cm.exception.code, 1)
 
         arguments = [self.__app, self.__usr, self.__pwd, "superfluous"]
-        self.assertRaises(SystemExit, xmppmote.parse_arguments, arguments)
+        with self.assertRaises(SystemExit) as cm:
+            xmppmote.parse_arguments(arguments)
+        self.assertEqual(cm.exception.code, 1)
 
 
     def test_connect_client(self):

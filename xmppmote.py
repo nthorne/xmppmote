@@ -79,10 +79,17 @@ def display_usage(appname):
 
 def parse_arguments(args):
     """ Parse command line arguments. """
-    if 2 == len(args):
-        if "-h" == args[1] or "--help" == args[1]:
-            display_usage(args[0])
-            sys.exit(0)
+    if None == args or 0 == len(args):
+        print u"Error: argv is None or empty"
+        sys.exit(1)
+    elif 2 == len(args) and ("-h" == args[1] or "--help" == args[1]):
+        display_usage(args[0])
+        sys.exit(0)
+    elif 1 != len(args):
+        print u"Error: unknown argument"
+        print
+        display_usage(args[0])
+        sys.exit(1)
 
 def connect_client(usr, pwd, logger):
     """ Helper function used for connecting to the network. """
