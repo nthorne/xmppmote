@@ -18,7 +18,6 @@
 #along with XMPPMote.  If not, see <http://www.gnu.org/licenses/>.
 
 """ This module tests the ConfigurationParser module """
-
 import sys
 import os
 
@@ -28,33 +27,73 @@ sys.path.append(os.path.abspath(".."))
 import mox
 import unittest
 
-import ConfigurationParser
+from configurationparser import ConfigurationParser
+from configurationparser import FileNotFoundException
+
+from ConfigParser import SafeConfigParser
+from ConfigParser import Error
 
 
 class ConfigurationParserTest(mox.MoxTestBase):
+    def test_borg_state(self):
+        """ Ensure proper Borg pattern implementation """
+        fst_parser = ConfigurationParser()
+        snd_parser = ConfigurationParser()
+
+        # Assert that the two different instances shares __dict__
+        # (i.e. correctly implements the Borg pattern)
+        self.assertTrue(fst_parser.__dict__ is snd_parser.__dict__)
+
     def test_parsing_existing_configuration_file(self):
-        self.fail()
+        """ Test the parsing of an 'existing' file """
+        existing_config_file = "thisfilewillappeartoexist"
+
+        self.mox.StubOutWithMock(os.path, "isfile")
+        mock_file = self.mox.CreateMockAnything()
+
+        self.mox.StubOutWithMock(SafeConfigParser, 'read')
+
+        os.path.isfile(existing_config_file).AndReturn(True)
+        SafeConfigParser.read(existing_config_file)
+
+        self.mox.ReplayAll()
+
+        c = ConfigurationParser()
+        try:
+            c.parse(existing_config_file)
+        except FileNotFoundException:
+            self.fail()
 
     def test_parsing_nonexisting_configuration_file(self):
-        self.fail()
+        nonexisting_config_file = "thisfilewillappearnottoexist"
 
-    def test_parsing_malformed_configuration_file(self):
-        self.fail()
+        self.mox.StubOutWithMock(os.path, "isfile")
+        mock_file = self.mox.CreateMockAnything()
 
-    def test_parsing_proper_configuration_file(self):
-        self.fail()
+        self.mox.StubOutWithMock(SafeConfigParser, 'read')
 
-    def test_retrieving_existing_key_value(self):
-        self.fail()
+        os.path.isfile(nonexisting_config_file).AndReturn(False)
 
-    def test_retrieving_nonexisting_key_value(self):
-        self.fail()
+        self.mox.ReplayAll()
 
-    def test_retrieving_existing_flag(self):
-        self.fail()
+        c = ConfigurationParser()
+        self.assertRaises(FileNotFoundException, c.parse,
+                          nonexisting_config_file)
 
-    def test_retrieving_nonexisting_flag(self):
-        self.fail()
+    #def test_retrieving_existing_key_value(self):
+        #self.fail()
+
+    #def test_retrieving_nonexisting_key_value(self):
+        #self.fail()
+
+    #def test_retrieving_existing_flag(self):
+        #self.fail()
+
+    #def test_retrieving_nonexisting_flag(self):
+        #self.fail()
+
+    #def test_retrieving_before_parsing(self):
+        #self.fail()
 
 
 if "__main__" == __name__:
