@@ -28,10 +28,14 @@ from ConfigParser import SafeConfigParser
 
 
 class FileNotFoundException(Exception):
+    """ This exception is raised upon nonexisting configuration file. """
     pass
 
+
 class Borg:
-    """ Implements the Borg pattern """
+    """ Implements the Borg pattern (i.e. shared state between (sub)type
+    instances, allowing us to keep away from the Singleton, which focuses on
+    instance rather than state) """
     __shared_state = {}
 
     def __init__(self):
@@ -57,3 +61,7 @@ class ConfigurationParser(Borg):
 
         self.__parser.read(rcfile)
 
+    def __getattr__(self, attrib):
+        """ This implements the proxy pattern, effectively delegating any
+        non-wrapped functions to the SafeConfigParser type. """
+        return getattr(self.__parser, attrib)

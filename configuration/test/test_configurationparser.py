@@ -31,11 +31,12 @@ from configurationparser import ConfigurationParser
 from configurationparser import FileNotFoundException
 
 from ConfigParser import SafeConfigParser
-from ConfigParser import Error
 
 
 class ConfigurationParserTest(mox.MoxTestBase):
-    def test_borg_state(self):
+    """ Contains test cases for the ConfigurationParser type """
+
+    def test_borg_pattern(self):
         """ Ensure proper Borg pattern implementation """
         fst_parser = ConfigurationParser()
         snd_parser = ConfigurationParser()
@@ -49,51 +50,42 @@ class ConfigurationParserTest(mox.MoxTestBase):
         existing_config_file = "thisfilewillappeartoexist"
 
         self.mox.StubOutWithMock(os.path, "isfile")
-        mock_file = self.mox.CreateMockAnything()
-
-        self.mox.StubOutWithMock(SafeConfigParser, 'read')
+        self.mox.StubOutWithMock(SafeConfigParser, "read")
 
         os.path.isfile(existing_config_file).AndReturn(True)
         SafeConfigParser.read(existing_config_file)
 
         self.mox.ReplayAll()
 
-        c = ConfigurationParser()
+        config = ConfigurationParser()
         try:
-            c.parse(existing_config_file)
+            config.parse(existing_config_file)
         except FileNotFoundException:
             self.fail()
 
     def test_parsing_nonexisting_configuration_file(self):
+        """ Test the parsing of a 'nonexisting' file """
         nonexisting_config_file = "thisfilewillappearnottoexist"
 
         self.mox.StubOutWithMock(os.path, "isfile")
-        mock_file = self.mox.CreateMockAnything()
-
-        self.mox.StubOutWithMock(SafeConfigParser, 'read')
+        self.mox.StubOutWithMock(SafeConfigParser, "read")
 
         os.path.isfile(nonexisting_config_file).AndReturn(False)
 
         self.mox.ReplayAll()
 
-        c = ConfigurationParser()
-        self.assertRaises(FileNotFoundException, c.parse,
+        config = ConfigurationParser()
+        self.assertRaises(FileNotFoundException, config.parse,
                           nonexisting_config_file)
 
-    #def test_retrieving_existing_key_value(self):
-        #self.fail()
-
-    #def test_retrieving_nonexisting_key_value(self):
-        #self.fail()
-
-    #def test_retrieving_existing_flag(self):
-        #self.fail()
-
-    #def test_retrieving_nonexisting_flag(self):
-        #self.fail()
-
-    #def test_retrieving_before_parsing(self):
-        #self.fail()
+    def test_proxy_pattern(self):
+        """ Do a basic test of the Proxy pattern implementation (we'll just
+        ensure that a single function call is delegated) """
+        config = ConfigurationParser()
+        # This asserts that the owning class of the call to config.get is in
+        # fact SafeConfigParser (i.e. the call was delegated (gotta love
+        # reflection))
+        self.assertEqual(config.get.im_class, SafeConfigParser)
 
 
 if "__main__" == __name__:
