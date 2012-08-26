@@ -32,7 +32,30 @@ import ConfigurationParser
 
 
 class ConfigurationParserTest(mox.MoxTestBase):
-    pass
+    def test_parsing_existing_configuration_file(self):
+        self.fail()
+
+    def test_parsing_nonexisting_configuration_file(self):
+        self.fail()
+
+    def test_parsing_malformed_configuration_file(self):
+        self.fail()
+
+    def test_parsing_proper_configuration_file(self):
+        self.fail()
+
+    def test_retrieving_existing_key_value(self):
+        self.fail()
+
+    def test_retrieving_nonexisting_key_value(self):
+        self.fail()
+
+    def test_retrieving_existing_flag(self):
+        self.fail()
+
+    def test_retrieving_nonexisting_flag(self):
+        self.fail()
+
 
 if "__main__" == __name__:
     unittest.main()
