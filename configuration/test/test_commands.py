@@ -28,8 +28,26 @@ import mox
 import unittest
 
 
-class CommandsTest(mox.MoxTestBase):
-    pass
+class GetCommandHandlerTest(mox.MoxTestBase):
+    def test_getting_existing_commandhandlers(self):
+        self.fail()
+
+    def test_getting_nonexisting_commandhandler(self):
+        self.fail()
+
+    def test_getting_commandhandler_undefined_in_config(self):
+        self.fail()
+
+
+class GetRestrictedSetTest(mox.MoxTestBase):
+    def test_getting_defined_restricted_set(self):
+        self.fail()
+
+    def test_getting_undefined_restricted_set(self):
+        self.fail()
+
+    def test_getting_malformed_restricted_set(self):
+        self.fail()
 
 
 if "__main__" == __name__:
