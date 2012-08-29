@@ -29,10 +29,41 @@ import os
 sys.path.append(os.path.abspath('..'))
 
 from bot.commandhandlers import UnsafeCommandHandler
+from bot.commandhandlers import RestrictedCommandHandler
+
+from configurationparser import ConfigurationParser
+from ConfigParser import NoSectionError
+from ConfigParser import NoOptionError
+
+
+class UnknownHandler(Exception):
+    """ This exception is raised whenever XMPPMote cannot locate a known command
+    handler in the configuration file. """
+    pass
+
 
 def get_command_handler(instance):
     """ Returns the command handler that is to parse incoming commands. """
-    return UnsafeCommandHandler(instance)
+
+    config = ConfigurationParser()
+    handlers = {
+        "restricted":   RestrictedCommandHandler(instance),
+        "passthru":     UnsafeCommandHandler(instance)
+    }
+
+    try:
+        configured_handler = config.get("general", "handler").lower()
+    except NoSectionError:
+        raise UnknownHandler("[general] section not found in configuration")
+    except NoOptionError:
+        raise UnknownHandler("handler option not found under [general] section")
+
+    result = handlers.get(configured_handler)
+
+    if not result:
+        raise UnknownHandler("unknown handler (valid are restricted/passthru")
+
+    return result
 
 def restricted_set():
     """ Returns the restricted command set to be allowed (if the
