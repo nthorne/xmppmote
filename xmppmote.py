@@ -33,6 +33,7 @@ from pyxmpp.all import JID
 from bot.client import Client
 
 from configuration import credentials
+from configuration.configurationparser import ConfigurationParser
 
 def set_encoding():
     """ Convert unicode input to current locale. """
@@ -102,13 +103,23 @@ def connect_client(usr, pwd, logger):
         client.disconnect()
         logger.info(u"disconnecting..")
 
+def parse_config_file():
+    """ Helper function that sets up the ConfigurationParser. """
+    config = ConfigurationParser()
+
+    fil = open("xmppmoterc", "a+")
+    config.parse(fil)
+
+
 def main():
     """ main functionalities placed here in order to prevent pollution
         of the module-level namespace. """
     set_encoding()
 
     parse_arguments(sys.argv)
-    usr, pwd = credentials.get_credentials('.credentials')
+
+    parse_config_file()
+    usr, pwd = credentials.get_credentials()
 
     logger = setup_logging()
 

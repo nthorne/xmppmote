@@ -47,13 +47,13 @@ class ConfigurationParserTest(mox.MoxTestBase):
 
     def test_parsing_existing_configuration_file(self):
         """ Test the parsing of an 'existing' file """
-        existing_config_file = "thisfilewillappeartoexist"
+        existing_config_file = self.mox.CreateMockAnything()
+        existing_config_file.closed = False
+        existing_config_file.name = "foobar"
 
-        self.mox.StubOutWithMock(os.path, "isfile")
         self.mox.StubOutWithMock(SafeConfigParser, "read")
 
-        os.path.isfile(existing_config_file).AndReturn(True)
-        SafeConfigParser.read(existing_config_file)
+        SafeConfigParser.read(existing_config_file.name)
 
         self.mox.ReplayAll()
 
@@ -63,20 +63,26 @@ class ConfigurationParserTest(mox.MoxTestBase):
         except FileNotFoundException:
             self.fail()
 
-    def test_parsing_nonexisting_configuration_file(self):
-        """ Test the parsing of a 'nonexisting' file """
-        nonexisting_config_file = "thisfilewillappearnottoexist"
-
-        self.mox.StubOutWithMock(os.path, "isfile")
-        self.mox.StubOutWithMock(SafeConfigParser, "read")
-
-        os.path.isfile(nonexisting_config_file).AndReturn(False)
+    def test_parsing_closed_configuration_file(self):
+        """ Test the parsing of an closed file """
+        existing_config_file = self.mox.CreateMockAnything()
+        existing_config_file.closed = True
 
         self.mox.ReplayAll()
 
         config = ConfigurationParser()
         self.assertRaises(FileNotFoundException, config.parse,
-                          nonexisting_config_file)
+                          existing_config_file)
+
+    def test_parsing_nonexisting_configuration_file(self):
+        """ Test the parsing of a 'nonexisting' file """
+        self.mox.StubOutWithMock(SafeConfigParser, "read")
+
+        self.mox.ReplayAll()
+
+        config = ConfigurationParser()
+        self.assertRaises(FileNotFoundException, config.parse,
+                          None)
 
     def test_proxy_pattern(self):
         """ Do a basic test of the Proxy pattern implementation (we'll just
@@ -86,6 +92,55 @@ class ConfigurationParserTest(mox.MoxTestBase):
         # fact SafeConfigParser (i.e. the call was delegated (gotta love
         # reflection))
         self.assertEqual(config.get.im_class, SafeConfigParser)
+
+
+    def test_setting_option(self):
+        """ Test setting an option - this should be a simple delegate to
+        SafeConfigParser.set, with a write upon successful set. """
+
+        mock_file = self.mox.CreateMockAnything()
+        mock_file.closed = False
+        mock_file.name = "foobar"
+
+        self.mox.StubOutWithMock(SafeConfigParser, "read")
+        self.mox.StubOutWithMock(SafeConfigParser, "set")
+        self.mox.StubOutWithMock(SafeConfigParser, "write")
+
+        SafeConfigParser.read(mock_file.name)
+        SafeConfigParser.set("credentials", "username", "foo")
+        mock_file.truncate(0)
+        mock_file.flush()
+        SafeConfigParser.write(mock_file)
+
+        self.mox.ReplayAll()
+        
+        config = ConfigurationParser()
+        config.parse(mock_file)
+        config.set("credentials", "username", "foo")
+
+    def test_adding_section(self):
+        """ Test adding a section - this should be a simple delegate to
+        SafeConfigParser.add_section, with a write upon successful set. """
+
+        mock_file = self.mox.CreateMockAnything()
+        mock_file.closed = False
+        mock_file.name = "foobar"
+
+        self.mox.StubOutWithMock(SafeConfigParser, "read")
+        self.mox.StubOutWithMock(SafeConfigParser, "add_section")
+        self.mox.StubOutWithMock(SafeConfigParser, "write")
+
+        SafeConfigParser.read(mock_file.name)
+        SafeConfigParser.add_section("credentials")
+        mock_file.truncate(0)
+        mock_file.flush()
+        SafeConfigParser.write(mock_file)
+
+        self.mox.ReplayAll()
+        
+        config = ConfigurationParser()
+        config.parse(mock_file)
+        config.add_section("credentials")
 
 
 if "__main__" == __name__:

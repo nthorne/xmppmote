@@ -23,31 +23,42 @@ This module supplies the credentials handling functionalities of
 XMPPMote; i.e. reading the credentials from a configuration file.
 """
 
+from configurationparser import ConfigurationParser
+from ConfigParser import NoSectionError
+from ConfigParser import NoOptionError
 
-def get_credentials(credentials_file):
+
+def get_credentials():
     """ Returns a tuple containing the user credentials, as read from the
-        credentials file. """
+    credentials section of the configuration file. """
 
     (username, password) = ('', '')
 
     try:
-        fil = open(credentials_file)
-    
-        username = fil.readline()
-        password = fil.readline()
-    except IOError:
+        config = ConfigurationParser()
+
+        username = config.get("credentials", "username")
+        password = config.get("credentials", "password")
+    except NoSectionError:
+        # We'll just allow for NoSectionError to pass through, since this one
+        # (usually) indicates missing section
+        config.add_section("credentials")
+    except NoOptionError:
+        # Allow missing options to slide by as well, since we'll just query the
+        # user for the credentials
         pass
 
 
     if 0 == len(password):
-        print "Error reading credentials file (%s). Please enter credentials."\
-            %credentials_file
+        print "Error reading credentials from the configuration file.",
+        print "Please enter credentials."
+
         username = raw_input("username: ")
         password = raw_input("password: ")
 
-        fil = open(credentials_file, 'w')
-        fil.writelines([username, "\n", password, "\n"])
-        fil.close()
+        config = ConfigurationParser()
+        config.set("credentials", "username", username)
+        config.set("credentials", "password", password)
 
     return (username.strip(), password.strip())
 

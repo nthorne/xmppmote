@@ -32,6 +32,10 @@ sys.path.append(os.path.abspath(".."))
 import mox
 
 import credentials
+from ConfigParser import SafeConfigParser
+from ConfigParser import NoSectionError
+from ConfigParser import NoOptionError
+from configurationparser import ConfigurationParser
 
 import unittest
 
@@ -39,84 +43,120 @@ class CredentialsTest(mox.MoxTestBase):
     """ Testing the credentials module """
 
     def test_get_credentials(self):
-        """ Ensure proper behavior when the file-like credentials object
-            containins a newline-separated username-password pair. """
+        """ Ensure proper behavior when the configuration file contains the
+        username-password pair. """
+
+        mock_file = self.mox.CreateMockAnything()
+        mock_file.closed = False
+        mock_file.name = "foobar"
 
         username, password = ("username@jabber.org", "password")
 
-        credentials_file = ".credentials"
+        self.mox.StubOutWithMock(SafeConfigParser, "get")
 
-
-        self.mox.StubOutWithMock(__builtin__, "open")
-        mock_file = self.mox.CreateMockAnything()
-
-        open(credentials_file).AndReturn(mock_file)
-        mock_file.readline().AndReturn(username)
-        mock_file.readline().AndReturn(password)
+        config = ConfigurationParser()
+        config.parse(mock_file)
+        config.get("credentials", "username").AndReturn(username)
+        config.get("credentials", "password").AndReturn(password)
 
         self.mox.ReplayAll()
 
-        self.assertEquals((username, password),
-                credentials.get_credentials(credentials_file))
+        self.assertEquals((username, password), credentials.get_credentials())
 
-    def test_get_credentials_nonexisting_file(self):
-        """ In the credentials file does not exist, the user should be
-            prompted for the credentials, and the input written to the
-            credentials file. """
+
+    def test_get_credentials_missing_section(self):
+        """ Test reading the credentials from a configuration file where the
+        credentials section is missing (uninitialized). """
+
+        mock_file = self.mox.CreateMockAnything()
+        mock_file.closed = False
+        mock_file.name = "foobar"
 
         username, password = ("username@jabber.org", "password")
 
-        credentials_file = ".credentials"
-
-
-        self.mox.StubOutWithMock(__builtin__, "open")
+        self.mox.StubOutWithMock(SafeConfigParser, "get")
+        self.mox.StubOutWithMock(SafeConfigParser, "add_section")
+        self.mox.StubOutWithMock(SafeConfigParser, "set")
         self.mox.StubOutWithMock(__builtin__, "raw_input")
-        mock_file = self.mox.CreateMockAnything()
 
-        open(credentials_file).AndRaise(IOError)
-        raw_input(mox.IgnoreArg()).AndReturn(username)
-        raw_input(mox.IgnoreArg()).AndReturn(password)
+        config = ConfigurationParser()
+        config.parse(mock_file)
+        error = NoSectionError("credentials")
+        config.get("credentials", "username").AndRaise(error)
 
-        open(credentials_file, 'w').AndReturn(mock_file)
-        mock_file.writelines([username, "\n", password, "\n"])
-        mock_file.close()
-
-        self.mox.ReplayAll()
-
-        self.assertEquals((username, password),
-                credentials.get_credentials(credentials_file))
-
-
-    def test_get_credentials_incomplete_credentials(self):
-        """ If the credentials file does not contain both username
-            and password, the user should be prompted for the information, and
-            any contents of the credentials file shall be overwritten. """
-
-        ignored_username, none_password = ("foo@bar", "")
-        username, password = ("username@jabber.org", "password")
-
-        credentials_file = ".credentials"
-
-
-        self.mox.StubOutWithMock(__builtin__, "open")
-        self.mox.StubOutWithMock(__builtin__, "raw_input")
-        mock_file = self.mox.CreateMockAnything()
-
-        open(credentials_file).AndReturn(mock_file)
-        mock_file.readline().AndReturn(ignored_username)
-        mock_file.readline().AndReturn(none_password)
+        config.add_section("credentials")
 
         raw_input(mox.IgnoreArg()).AndReturn(username)
         raw_input(mox.IgnoreArg()).AndReturn(password)
 
-        open(credentials_file, 'w').AndReturn(mock_file)
-        mock_file.writelines([username, "\n", password, "\n"])
-        mock_file.close()
+        config.set("credentials", "username", username)
+        config.set("credentials", "password", password)
 
         self.mox.ReplayAll()
 
-        self.assertEquals((username, password),
-                credentials.get_credentials(credentials_file))
+        self.assertEquals((username, password), credentials.get_credentials())
+
+
+    def test_get_credentials_missing_username(self):
+        """ Test reading the credentials from a configuration file where the
+        username option is missing. """
+
+        mock_file = self.mox.CreateMockAnything()
+        mock_file.closed = False
+        mock_file.name = "foobar"
+
+        username, password = ("username@jabber.org", "password")
+
+        self.mox.StubOutWithMock(SafeConfigParser, "get")
+        self.mox.StubOutWithMock(ConfigurationParser, "set")
+        self.mox.StubOutWithMock(SafeConfigParser, "write")
+        self.mox.StubOutWithMock(__builtin__, "raw_input")
+
+        config = ConfigurationParser()
+        config.parse(mock_file)
+        error = NoOptionError("credentials", "username")
+        config.get("credentials", "username").AndRaise(error)
+
+        raw_input(mox.IgnoreArg()).AndReturn(username)
+        raw_input(mox.IgnoreArg()).AndReturn(password)
+
+        config.set("credentials", "username", username)
+        config.set("credentials", "password", password)
+
+        self.mox.ReplayAll()
+
+        self.assertEquals((username, password), credentials.get_credentials())
+
+
+    def test_get_credentials_missing_password(self):
+        """ Test reading the credentials from a configuration file where the
+        password option is missing. """
+
+        mock_file = self.mox.CreateMockAnything()
+        mock_file.closed = False
+        mock_file.name = "foobar"
+
+        username, password = ("username@jabber.org", "password")
+
+        self.mox.StubOutWithMock(SafeConfigParser, "get")
+        self.mox.StubOutWithMock(ConfigurationParser, "set")
+        self.mox.StubOutWithMock(__builtin__, "raw_input")
+
+        config = ConfigurationParser()
+        config.parse(mock_file)
+        error = NoOptionError("credentials", "password")
+        config.get("credentials", "username").AndReturn(username)
+        config.get("credentials", "password").AndRaise(error)
+
+        raw_input(mox.IgnoreArg()).AndReturn(username)
+        raw_input(mox.IgnoreArg()).AndReturn(password)
+
+        config.set("credentials", "username", username)
+        config.set("credentials", "password", password)
+
+        self.mox.ReplayAll()
+
+        self.assertEquals((username, password), credentials.get_credentials())
 
 
 if "__main__" == __name__:

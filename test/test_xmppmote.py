@@ -19,6 +19,7 @@
 
 """ This module tests the xmppmote module. """
 
+import __builtin__
 import sys
 import os
 import logging
@@ -30,6 +31,8 @@ import mox
 
 from bot.client import Client
 from pyxmpp.all import JID
+
+from configuration.configurationparser import ConfigurationParser
 
 import unittest
 
@@ -44,14 +47,14 @@ class XMPPMoteTest(mox.MoxTestBase):
         """ Test the parse_arguments function with [0, 4] arguments
             as well as the help flags. """
         arguments = None
-        with self.assertRaises(SystemExit) as cm:
+        with self.assertRaises(SystemExit) as context_manager:
             xmppmote.parse_arguments(arguments)
-        self.assertEqual(cm.exception.code, 1)
+        self.assertEqual(context_manager.exception.code, 1)
 
         arguments = []
-        with self.assertRaises(SystemExit) as cm:
+        with self.assertRaises(SystemExit) as context_manager:
             xmppmote.parse_arguments(arguments)
-        self.assertEqual(cm.exception.code, 1)
+        self.assertEqual(context_manager.exception.code, 1)
 
         arguments = [self.__app]
         try:
@@ -60,24 +63,24 @@ class XMPPMoteTest(mox.MoxTestBase):
             self.fail("Unexpected assertion")
 
         arguments = [self.__app, "-h"]
-        with self.assertRaises(SystemExit) as cm:
+        with self.assertRaises(SystemExit) as context_manager:
             xmppmote.parse_arguments(arguments)
-        self.assertEqual(cm.exception.code, 0)
+        self.assertEqual(context_manager.exception.code, 0)
 
         arguments = [self.__app, "--help"]
-        with self.assertRaises(SystemExit) as cm:
+        with self.assertRaises(SystemExit) as context_manager:
             xmppmote.parse_arguments(arguments)
-        self.assertEqual(cm.exception.code, 0)
+        self.assertEqual(context_manager.exception.code, 0)
 
         arguments = [self.__app, self.__usr, self.__pwd]
-        with self.assertRaises(SystemExit) as cm:
+        with self.assertRaises(SystemExit) as context_manager:
             xmppmote.parse_arguments(arguments)
-        self.assertEqual(cm.exception.code, 1)
+        self.assertEqual(context_manager.exception.code, 1)
 
         arguments = [self.__app, self.__usr, self.__pwd, "superfluous"]
-        with self.assertRaises(SystemExit) as cm:
+        with self.assertRaises(SystemExit) as context_manager:
             xmppmote.parse_arguments(arguments)
-        self.assertEqual(cm.exception.code, 1)
+        self.assertEqual(context_manager.exception.code, 1)
 
 
     def test_connect_client(self):
@@ -95,6 +98,23 @@ class XMPPMoteTest(mox.MoxTestBase):
         self.mox.ReplayAll()
 
         xmppmote.connect_client(self.__usr, self.__pwd, logging.getLogger())
+
+    def test_parse_config_file(self):
+        """ Test parsing the configuration, when it exists. """
+
+        mock_file = self.mox.CreateMockAnything()
+        mock_file.name = "xmppmoterc"
+
+        self.mox.StubOutWithMock(__builtin__, "open")
+        self.mox.StubOutWithMock(ConfigurationParser, "parse")
+
+        config = ConfigurationParser()
+        open("xmppmoterc", "a+").AndReturn(mock_file)
+        config.parse(mock_file)
+
+        self.mox.ReplayAll()
+
+        xmppmote.parse_config_file()
     
 
 if "__main__" == __name__:

@@ -23,7 +23,6 @@ This module is responsible for parsing the XMPPMote configuration file, and
 presenting its key-value pairs to the application.
 """
 
-import os
 from ConfigParser import SafeConfigParser
 
 
@@ -49,19 +48,43 @@ class ConfigurationParser(Borg):
 
     def __init__(self):
         Borg.__init__(self)
-        self.__parser = SafeConfigParser()
 
     def parse(self, rcfile):
-        """ Parse the configuration file named in _rcfile_. If the file does not
-        exist, IOError will be raised. """
-        
-        # We do this simple open operation, just to test for file eistence
-        if not os.path.isfile(rcfile):
+        """ Parse the configuration file retrieved as given by the file-like
+        object _rcfile_. """
+
+        self.__parser = SafeConfigParser()
+
+        if None == rcfile or rcfile.closed:
             raise FileNotFoundException
 
-        self.__parser.read(rcfile)
+        self.__parser.read(rcfile.name)
+        self.__fp = rcfile
+
+    def set(self, section, option, value = None):
+        """ This function delegates the set call to the SafeConfigParser, and
+        writes the parser state to disk upon successful set. """
+
+        self.__parser.set(section, option, value)
+        self.__save_state()
+
+    def add_section(self, section):
+        """ This function delegates the add_section call to the
+        SafeConfigParser, and writes the parser state to disk upon successful
+        set. """
+
+        self.__parser.add_section(section)
+        self.__save_state()
 
     def __getattr__(self, attrib):
         """ This implements the proxy pattern, effectively delegating any
         non-wrapped functions to the SafeConfigParser type. """
+
         return getattr(self.__parser, attrib)
+
+    def __save_state(self):
+        """ Tiny helper function for saving the configuration state to disk. """
+
+        self.__fp.truncate(0)
+        self.__parser.write(self.__fp)
+        self.__fp.flush()
