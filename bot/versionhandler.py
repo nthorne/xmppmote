@@ -1,4 +1,4 @@
-#Copyright (C) 2012 Niklas Thorne.
+#Copyright (C) 2012 Niklas Thörne.
 
 #This file is part of XMPPMote.
 #
