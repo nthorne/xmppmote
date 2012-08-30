@@ -1,0 +1,25 @@
+# vim: filetype=config 
+
+[general]
+# In this section, the type of command handler to be used is defined, using the
+# handler option. The available handler types are restricted and passthru. The
+# restricted handler only allows commands defined in the [commands] section to
+# be executed, and the passthru handler just accepts anything you type, throwing
+# it at subprocess.Popen and hoping that it sticks.
+handler: restricted
+
+[commands]
+# In this section we defined the commands allowed by the restricted section. The
+# syntax is "<key>:<command>:[args]:[help]", where <key> is a non-optional,
+# arbitary key (should be unique, but its value does not matter), <command> is a
+# the actual command to execute, [args] are any (optional) arguments to pass to
+# the command, [help] is an optional help string to display upon issuing the
+# help command. See the commands defined below for examples.
+command1: uptime::List system uptime
+command2: df:-h:Show disk usage
+command3: pwd::
+
+# NOTE: Remember to define this one if you want to be able to terminate the
+#   XMPPMote process via chat.
+command4: bye::Terminate XMPPMote
+
