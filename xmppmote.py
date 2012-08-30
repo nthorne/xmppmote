@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-#Copyright (C) 2012 Niklas Thörne.
+#Copyright (C) 2012 Niklas Thorne.
 #
 #This file is part of XMPPMote.
 #
