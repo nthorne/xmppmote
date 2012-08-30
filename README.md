@@ -22,11 +22,9 @@ and then initialise a chat session between that user, and the user that you wish
 your box with; and since that session initialisation is not yet implemented in XMPPMote,
 just go ahead and use a web based jabber client such as JWChat (http://jwchat.org/).
 
-After having set up the XMPP user, modify configuration/commands.pu to suit your likings
-(i.e. command handler type, and possibly a set of allowed commands, if RestrictedCommandHandler
-is to be used; if no changes are made, the UnsafeCommandHandler is used, which will basically
-throw any incoming command at the shell, hoping that it sticks). After configurating XMPPMote,
-it is invoked by typing
+After having set up the XMPP user, copy xmppmoterc.example into xmppmoterc, and modify it to
+suit your likings (i.e. command handler type, and possibly a set of allowed commands).
+After configurating XMPPMote, it is invoked by typing
 
 `$ ./xmppmote.py`
 
@@ -39,5 +37,5 @@ final notes
 -----------
 
 This software is in early beta, so don't expect much regarding documentation and user friendliness;
-also, important features such as a sane configuration system and daemonization is not yet in place either.
+also, important features such as daemonization is not yet in place either.
 
