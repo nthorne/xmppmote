@@ -42,6 +42,12 @@ class UnknownHandler(Exception):
     pass
 
 
+class MalformedCommand(Exception):
+    """ This exception is raised whenever a malformed command is encountered in
+    the configuration file. """
+    pass
+
+
 def get_command_handler(instance):
     """ Returns the command handler that is to parse incoming commands. """
 
@@ -72,9 +78,39 @@ def restricted_set():
         to execute in a shell, args is the command arguments, and hlp
         is the help to display upon receiving the help command. """
 
-    return [
-        ("uptime", None, "List system uptime"),
-        ("df", ["-h"], "Show disk usage"),
-        ("bye", None, "Terminate XMPPMote")
-    ]
+    result = []
+
+    config = ConfigurationParser()
+    if config.has_section("commands"):
+        options = config.items("commands")
+
+        result = map(__transform_set, 
+                     [tuple(value.split(':')) for (key, value) in options])
+
+    return result
     
+
+def __transform_set(tupl):
+    """ Helper function used to transform a command tuple read from the
+    configuration file. """
+
+    fst, snd, thrd = (None, None, "")
+
+    try:
+        fst = tupl[0]
+        snd = tupl[1]
+
+        if 0 == len(snd):
+            snd = None
+
+        thrd = tupl[2]
+    except IndexError:
+        pass
+
+    if not fst:
+        raise MalformedCommand
+
+    if snd:
+        snd = [snd]
+
+    return (fst, snd, thrd)

@@ -33,6 +33,9 @@ from ConfigParser import NoOptionError
 
 from configuration.commands import get_command_handler
 from configuration.commands import UnknownHandler
+from configuration.commands import restricted_set
+from configuration.commands import MalformedCommand
+
 from configuration.configurationparser import ConfigurationParser
 from bot import commandhandlers
 
@@ -117,14 +120,104 @@ class GetCommandHandlerTest(mox.MoxTestBase):
         self.assertRaises(UnknownHandler, get_command_handler, mock_client)
 
 class GetRestrictedSetTest(mox.MoxTestBase):
-    def test_getting_defined_restricted_set(self):
-        self.fail()
+    """ Provides test cases for the restricted_set function. """
 
-    def test_getting_undefined_restricted_set(self):
-        self.fail()
+    def test_getting_defined_restricted_set(self):
+        """ Make sure that properly formed commands are parsed into a list of
+        command tuples. """
+
+        mock_file = self.mox.CreateMockAnything()
+        mock_file.closed = False
+        mock_file.name = "foobar"
+
+        self.mox.StubOutWithMock(SafeConfigParser, "has_section")
+        self.mox.StubOutWithMock(SafeConfigParser, "items")
+
+        config = ConfigurationParser()
+        config.parse(mock_file)
+
+        config.has_section("commands").AndReturn(True)
+        config.items("commands").AndReturn([
+            ("foo", "ls::List files"),
+            ("bar", "df:-h:Disk space usage (human readable)"),
+            ("baz", "du:-sh .:"),
+            ("foz", "pwd")
+        ])
+
+        self.mox.ReplayAll()
+
+        self.assertEquals(restricted_set(), [
+            ("ls", None, "List files"),
+            ("df", ["-h"], "Disk space usage (human readable)"),
+            ("du", ["-sh ."], ""),
+            ("pwd", None, "")
+        ])
+
+
+
+    def test_restricted_set_missing_section(self):
+        """ If there is no commands section in the configuration file, an empty
+        list should be returned. """
+
+        mock_file = self.mox.CreateMockAnything()
+        mock_file.closed = False
+        mock_file.name = "foobar"
+
+        self.mox.StubOutWithMock(SafeConfigParser, "has_section")
+        self.mox.StubOutWithMock(SafeConfigParser, "items")
+
+        config = ConfigurationParser()
+        config.parse(mock_file)
+
+        config.has_section("commands").AndReturn(False)
+
+        self.mox.ReplayAll()
+
+        self.assertEquals(restricted_set(), [])
+
+
+    def test_restricted_set_undefined_set(self):
+        """ If there is a command section defined, but no commands in it, an
+        empty list should be returned. """
+
+        mock_file = self.mox.CreateMockAnything()
+        mock_file.closed = False
+        mock_file.name = "foobar"
+
+        self.mox.StubOutWithMock(SafeConfigParser, "has_section")
+        self.mox.StubOutWithMock(SafeConfigParser, "items")
+
+        config = ConfigurationParser()
+        config.parse(mock_file)
+
+        config.has_section("commands").AndReturn(True)
+        config.items("commands").AndReturn([])
+
+        self.mox.ReplayAll()
+
+        self.assertEquals(restricted_set(), [])
+
 
     def test_getting_malformed_restricted_set(self):
-        self.fail()
+        """ If there is a malformed command defined in the commands section, a
+        MalformedCommand should be raised. """
+
+        mock_file = self.mox.CreateMockAnything()
+        mock_file.closed = False
+        mock_file.name = "foobar"
+
+        self.mox.StubOutWithMock(SafeConfigParser, "has_section")
+        self.mox.StubOutWithMock(SafeConfigParser, "items")
+
+        config = ConfigurationParser()
+        config.parse(mock_file)
+
+        config.has_section("commands").AndReturn(True)
+        config.items("commands").AndReturn([("foo", "")])
+
+        self.mox.ReplayAll()
+
+        self.assertRaises(MalformedCommand, restricted_set)
 
 
 if "__main__" == __name__:
