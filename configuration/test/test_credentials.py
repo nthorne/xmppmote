@@ -108,7 +108,7 @@ class CredentialsTest(mox.MoxTestBase):
         username, password = ("username@jabber.org", "password")
 
         self.mox.StubOutWithMock(SafeConfigParser, "get")
-        self.mox.StubOutWithMock(ConfigurationParser, "set")
+        self.mox.StubOutWithMock(SafeConfigParser, "set")
         self.mox.StubOutWithMock(SafeConfigParser, "write")
         self.mox.StubOutWithMock(__builtin__, "raw_input")
 
@@ -139,7 +139,7 @@ class CredentialsTest(mox.MoxTestBase):
         username, password = ("username@jabber.org", "password")
 
         self.mox.StubOutWithMock(SafeConfigParser, "get")
-        self.mox.StubOutWithMock(ConfigurationParser, "set")
+        self.mox.StubOutWithMock(SafeConfigParser, "set")
         self.mox.StubOutWithMock(__builtin__, "raw_input")
 
         config = ConfigurationParser()

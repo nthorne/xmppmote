@@ -61,26 +61,17 @@ class ConfigurationParser(Borg):
         self.__parser.read(rcfile.name)
         self.__fp = rcfile
 
-    def set(self, section, option, value = None):
-        """ This function delegates the set call to the SafeConfigParser, and
-        writes the parser state to disk upon successful set. """
-
-        self.__parser.set(section, option, value)
-        self.__save_state()
-
-    def add_section(self, section):
-        """ This function delegates the add_section call to the
-        SafeConfigParser, and writes the parser state to disk upon successful
-        set. """
-
-        self.__parser.add_section(section)
-        self.__save_state()
-
     def __getattr__(self, attrib):
         """ This implements the proxy pattern, effectively delegating any
         non-wrapped functions to the SafeConfigParser type. """
 
-        return getattr(self.__parser, attrib)
+        result = getattr(self.__parser, attrib)
+
+        # if a modifying call was performed, save the parser state to disk
+        if 'set' == attrib or attrib.startswith('add_') or attrib.startswith('remove_'):
+            self.__save_state()
+
+        return result
 
     def __save_state(self):
         """ Tiny helper function for saving the configuration state to disk. """
