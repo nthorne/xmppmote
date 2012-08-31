@@ -36,6 +36,4 @@ you can type **bye** into your client to terminate the bot.
 final notes
 -----------
 
-This software is in early beta, so don't expect much regarding documentation and user friendliness;
-also, important features such as daemonization is not yet in place either.
-
+This software is in early beta, so don't expect much regarding documentation and user friendliness.

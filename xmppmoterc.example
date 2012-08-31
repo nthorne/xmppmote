@@ -6,6 +6,8 @@
 # restricted handler only allows commands defined in the [commands] section to
 # be executed, and the passthru handler just accepts anything you type, throwing
 # it at subprocess.Popen and hoping that it sticks.
+# Other options that can be set here are pidfile, which details the full path to
+# the pidfile where the daemon's pid is stored (defaults to /tmp/xmppmote.pid).
 handler: restricted
 
 [commands]
