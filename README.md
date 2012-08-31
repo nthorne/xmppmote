@@ -26,7 +26,7 @@ After having set up the XMPP user, copy xmppmoterc.example into xmppmoterc, and 
 suit your likings (i.e. command handler type, and possibly a set of allowed commands).
 After configurating XMPPMote, it is invoked by typing
 
-`$ ./xmppmote.py`
+`$ ./xmppmoted.py start`
 
 Which should cause you to be prompted for the username (including e.g. @jabber.org), and password
 that you created for XMPPMote. After having entered the credentials, the bot should be online
