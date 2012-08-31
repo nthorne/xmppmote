@@ -1,7 +1,7 @@
 xmppmote
 ========
 
-Remote server administration via XMPP (e.g. control a headless server via Google Chat
+Daemon for remote server administration over XMPP (e.g. control a headless server via Google Chat
 on your smart phone).
 
 dependencies
@@ -24,14 +24,18 @@ just go ahead and use a web based jabber client such as JWChat (http://jwchat.or
 
 After having set up the XMPP user, copy xmppmoterc.example into xmppmoterc, and modify it to
 suit your likings (i.e. command handler type, and possibly a set of allowed commands).
-After configurating XMPPMote, it is invoked by typing
+After configurating XMPPMote, the daemon is started by typing
 
 `$ ./xmppmoted.py start`
 
-Which should cause you to be prompted for the username (including e.g. @jabber.org), and password
+which should cause you to be prompted for the username (including e.g. @jabber.org), and password
 that you created for XMPPMote. After having entered the credentials, the bot should be online
 in your chat client, and you can chat away with it until your heart is content; at which point
 you can type **bye** into your client to terminate the bot.
+
+For more command line options, type
+
+`$ ./xmppmoted.py -h`
 
 final notes
 -----------
