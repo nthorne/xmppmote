@@ -1,0 +1,10 @@
+# vim: filetype=sh
+
+# Options to pass to XMPPMote
+
+
+# Uncomment the two sections below, and modify them if XMPPMote is installed
+# somewhere other than in /opt/xmppmote
+#
+# DAEMON_PATH=/installpath
+# DAEMON=$DAEMON_PATH/$NAME

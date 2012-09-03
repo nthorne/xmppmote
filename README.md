@@ -38,19 +38,22 @@ For more command line options, type
 `$ ./xmppmoted.py -h`
 
 In order to have the daemon starting at system startup on an Ubuntu system, assuming that XMPPMote
-is installed in /opt/xmppmote (otherwise, you'll need to update the DAEMON\_PATH variable in the
-xmppmote init script to point at your XMPPMote installation path), copy initd-xmppmote to
+is installed in /opt/xmppmote (otherwise, you'll need to update the xmppmote script that you copy
+to /etc/default, according to its comments, copy initd-xmppmote and config-xmppmote to
 /etc/init.d and run update-rc.d, e.g.
 
     $ sudo su
-    # cp /opt/xmppmote/initd-xmppmote /etc/init.d/xmppmote
+    # cp /opt/xmppmote/rc/initd-xmppmote /etc/init.d/xmppmote
+    # cp /opt/xmppmote/rc/config-xmppmote /etc/default/xmppmote
     # update-rc.d xmppmote defaults
 
 On any other system that supports System V style init scripts, it should work just fine, by
-copying the init script as in the previous example (modifying the DAEMON\_PATH variable if
-needed), and then simply symlinking the init script to the appropriate runlevel, e.g.
+copying the init script and its configuration file as in the previous example (modifying th
+configuration script if needed), and then simply symlinking the init script to the
+appropriate runlevel, e.g.
 
-    # cp /opt/xmppmote/initd-xmppmote /etc/init.d/xmppmote
+    # cp /opt/xmppmote/rc/initd-xmppmote /etc/init.d/xmppmote
+    # cp /opt/xmppmote/rc/config-xmppmote /etc/default/xmppmote
     # ln -s /etc/init.d/xmppmote /etc/rc3.d/S99xmppmote
 
 final notes
