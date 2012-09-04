@@ -65,13 +65,21 @@ class ConfigurationParser(Borg):
         """ This implements the proxy pattern, effectively delegating any
         non-wrapped functions to the SafeConfigParser type. """
 
-        result = getattr(self.__parser, attrib)
+        wrapped_attr = getattr(self.__parser, attrib)
 
-        # if a modifying call was performed, save the parser state to disk
-        if 'set' == attrib or attrib.startswith('add_') or attrib.startswith('remove_'):
-            self.__save_state()
+        def save_state_wrapper(*args):
+            """ This function wraps getattr calls in such a way that any state
+            modifying call will result in the parser state being written to
+            disk. """
+            result = wrapped_attr(*args)
 
-        return result
+            # if a modifying call was performed, save the parser state to disk
+            if 'set' == attrib or attrib.startswith('add_') or attrib.startswith('remove_'):
+                self.__save_state()
+
+            return result
+
+        return save_state_wrapper
 
     def __save_state(self):
         """ Tiny helper function for saving the configuration state to disk. """

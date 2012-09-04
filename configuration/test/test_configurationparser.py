@@ -91,7 +91,7 @@ class ConfigurationParserTest(mox.MoxTestBase):
         # This asserts that the owning class of the call to config.get is in
         # fact SafeConfigParser (i.e. the call was delegated (gotta love
         # reflection))
-        self.assertEqual(config.get.im_class, SafeConfigParser)
+        self.assertEqual(config.get.__name__, 'save_state_wrapper')
 
 
     def test_setting_option(self):
