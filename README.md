@@ -32,7 +32,8 @@ configuration file to /etc/init.d and /etc/default, respectively. After having i
 XMPPMote, it is **imperative** that you _start it manually once in order to enter your
 credentials_, i.e.
 
-`$ sudo ./xmppmoted.py start`
+    $ cd /opt/xmppmote
+    $ sudo ./xmppmoted.py start
 
 this should cause you to be prompted for the username (including e.g. @jabber.org), and password
 that you created for XMPPMote. After having entered the credentials, the bot should be online
@@ -45,7 +46,7 @@ For more command line options, type
 
 In order to have the daemon starting at system startup on an Ubuntu system, use update-rc.d, e.g.:
 
-    $ sudo update-rc.d xmppmote defaults
+`$ sudo update-rc.d xmppmote defaults`
 
 On any other system that supports System V style init scripts, you should be able to get the
 daemon started automaticall by symlinking the init script to the appropriate runlevels, e.g.
@@ -57,7 +58,9 @@ daemon started automaticall by symlinking the init script to the appropriate run
 For details regarding the configuration of XMPPMote, please refer to xmppmoterc.example in the
 XMPPMote installation directory.
 
-final notes
------------
+here be dragons
+---------------
 
-This software is in early beta, so don't expect much regarding documentation and user friendliness.
+Please note that this is an early beta software. That, in combination with messing around with
+init scripts, can cause some serious problems with your system in case of malconfiguration, so
+make sure to verify the XMPPMote installation properly.
