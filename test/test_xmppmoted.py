@@ -33,12 +33,12 @@ from pyxmpp.all import JID
 import __builtin__
 import mox
 import unittest
-import xmppmote
+import xmppmoted
 
 class XMPPMoteTest(mox.MoxTestBase):
     """ Testing the trickier parts of the xmppmote module """
 
-    __app = "xmppmote.py"
+    __app = "xmppmoted.py"
     __usr = "JID"
     __pwd = "PWD"
 
@@ -49,37 +49,37 @@ class XMPPMoteTest(mox.MoxTestBase):
             NOTE: daemon control is not tested here"""
         arguments = None
         with self.assertRaises(SystemExit) as context_manager:
-            xmppmote.parse_arguments(arguments)
+            xmppmoted.parse_arguments(arguments)
         self.assertEqual(context_manager.exception.code, 1)
 
         arguments = []
         with self.assertRaises(SystemExit) as context_manager:
-            xmppmote.parse_arguments(arguments)
+            xmppmoted.parse_arguments(arguments)
         self.assertEqual(context_manager.exception.code, 1)
 
         arguments = [self.__app]
         with self.assertRaises(SystemExit) as context_manager:
-            xmppmote.parse_arguments(arguments)
+            xmppmoted.parse_arguments(arguments)
         self.assertEqual(context_manager.exception.code, 1)
 
         arguments = [self.__app, "-h"]
         with self.assertRaises(SystemExit) as context_manager:
-            xmppmote.parse_arguments(arguments)
+            xmppmoted.parse_arguments(arguments)
         self.assertEqual(context_manager.exception.code, 0)
 
         arguments = [self.__app, "--help"]
         with self.assertRaises(SystemExit) as context_manager:
-            xmppmote.parse_arguments(arguments)
+            xmppmoted.parse_arguments(arguments)
         self.assertEqual(context_manager.exception.code, 0)
 
         arguments = [self.__app, self.__usr, self.__pwd]
         with self.assertRaises(SystemExit) as context_manager:
-            xmppmote.parse_arguments(arguments)
+            xmppmoted.parse_arguments(arguments)
         self.assertEqual(context_manager.exception.code, 1)
 
         arguments = [self.__app, self.__usr, self.__pwd, "superfluous"]
         with self.assertRaises(SystemExit) as context_manager:
-            xmppmote.parse_arguments(arguments)
+            xmppmoted.parse_arguments(arguments)
         self.assertEqual(context_manager.exception.code, 1)
 
 
@@ -94,14 +94,14 @@ class XMPPMoteTest(mox.MoxTestBase):
 
         self.mox.StubOutWithMock(Daemon, "start")
 
-        self.mox.StubOutWithMock(xmppmote.XMPPMoteDaemon,
+        self.mox.StubOutWithMock(xmppmoted.XMPPMoteDaemon,
                                  "_XMPPMoteDaemon__parse_config_file")
-        self.mox.StubOutWithMock(xmppmote.XMPPMoteDaemon,
+        self.mox.StubOutWithMock(xmppmoted.XMPPMoteDaemon,
                                  "_XMPPMoteDaemon__get_pidfile")
         self.mox.StubOutWithMock(credentials, "get_credentials")
 
-        xmppmote.XMPPMoteDaemon._XMPPMoteDaemon__parse_config_file()
-        xmppmote.XMPPMoteDaemon._XMPPMoteDaemon__get_pidfile().AndReturn(None)
+        xmppmoted.XMPPMoteDaemon._XMPPMoteDaemon__parse_config_file()
+        xmppmoted.XMPPMoteDaemon._XMPPMoteDaemon__get_pidfile().AndReturn(None)
 
         Daemon.start(mox.IgnoreArg())
 
@@ -113,7 +113,7 @@ class XMPPMoteTest(mox.MoxTestBase):
         Client.disconnect()
         self.mox.ReplayAll()
 
-        daemon = xmppmote.XMPPMoteDaemon()
+        daemon = xmppmoted.XMPPMoteDaemon()
         daemon.start()
         daemon.run()
 
@@ -125,56 +125,56 @@ class XMPPMoteTest(mox.MoxTestBase):
 
         self.mox.StubOutWithMock(__builtin__, "open")
         self.mox.StubOutWithMock(ConfigurationParser, "parse")
-        self.mox.StubOutWithMock(xmppmote.XMPPMoteDaemon,
+        self.mox.StubOutWithMock(xmppmoted.XMPPMoteDaemon,
                                  "_XMPPMoteDaemon__get_pidfile")
         self.mox.StubOutWithMock(Daemon, "__init__")
 
         config = ConfigurationParser()
         open("xmppmoterc", "a+").AndReturn(mock_file)
         config.parse(mock_file)
-        xmppmote.XMPPMoteDaemon._XMPPMoteDaemon__get_pidfile().AndReturn(None)
+        xmppmoted.XMPPMoteDaemon._XMPPMoteDaemon__get_pidfile().AndReturn(None)
         Daemon.__init__(mox.IgnoreArg(), None)
 
         self.mox.ReplayAll()
     
-        daemon = xmppmote.XMPPMoteDaemon()
+        daemon = xmppmoted.XMPPMoteDaemon()
 
 
     def test_daemon_control(self):
         """ Ensure that the daemon is started, stopped and restarted properly
         when given the appropriate command line arguments. """
 
-        self.mox.StubOutWithMock(xmppmote.XMPPMoteDaemon, "__init__")
-        self.mox.StubOutWithMock(xmppmote.XMPPMoteDaemon, "start")
-        self.mox.StubOutWithMock(xmppmote.XMPPMoteDaemon, "stop")
-        self.mox.StubOutWithMock(xmppmote.XMPPMoteDaemon, "restart")
+        self.mox.StubOutWithMock(xmppmoted.XMPPMoteDaemon, "__init__")
+        self.mox.StubOutWithMock(xmppmoted.XMPPMoteDaemon, "start")
+        self.mox.StubOutWithMock(xmppmoted.XMPPMoteDaemon, "stop")
+        self.mox.StubOutWithMock(xmppmoted.XMPPMoteDaemon, "restart")
 
-        xmppmote.XMPPMoteDaemon.__init__()
-        xmppmote.XMPPMoteDaemon.start()
+        xmppmoted.XMPPMoteDaemon.__init__()
+        xmppmoted.XMPPMoteDaemon.start()
 
-        xmppmote.XMPPMoteDaemon.__init__()
-        xmppmote.XMPPMoteDaemon.stop()
+        xmppmoted.XMPPMoteDaemon.__init__()
+        xmppmoted.XMPPMoteDaemon.stop()
 
-        xmppmote.XMPPMoteDaemon.__init__()
-        xmppmote.XMPPMoteDaemon.restart()
+        xmppmoted.XMPPMoteDaemon.__init__()
+        xmppmoted.XMPPMoteDaemon.restart()
 
         self.mox.ReplayAll()
 
         arguments = [self.__app, "start"] 
         try:
-            xmppmote.parse_arguments(arguments)
+            xmppmoted.parse_arguments(arguments)
         except Exception, e:
             self.fail("Unknown exception raised %s" % e)
 
         arguments = [self.__app, "stop"] 
         try:
-            xmppmote.parse_arguments(arguments)
+            xmppmoted.parse_arguments(arguments)
         except Exception:
             self.fail("Unknown exception raised")
     
         arguments = [self.__app, "restart"] 
         try:
-            xmppmote.parse_arguments(arguments)
+            xmppmoted.parse_arguments(arguments)
         except Exception:
             self.fail("Unknown exception raised")
 
@@ -188,7 +188,7 @@ class XMPPMoteTest(mox.MoxTestBase):
 
         self.mox.ReplayAll()
 
-        daemon = xmppmote.XMPPMoteDaemon()
+        daemon = xmppmoted.XMPPMoteDaemon()
         self.assertEqual("foobar", daemon._XMPPMoteDaemon__get_pidfile())
 
     def test_getting_pidfile_pidfile_not_defined(self):
@@ -201,7 +201,7 @@ class XMPPMoteTest(mox.MoxTestBase):
 
         self.mox.ReplayAll()
 
-        daemon = xmppmote.XMPPMoteDaemon()
+        daemon = xmppmoted.XMPPMoteDaemon()
         self.assertEqual("/tmp/xmppmote.pid",
                          daemon._XMPPMoteDaemon__get_pidfile())
 
