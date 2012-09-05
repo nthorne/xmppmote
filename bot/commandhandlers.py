@@ -215,6 +215,7 @@ class RestrictedCommandHandler(CommandHandler):
         """ Overridden in order to provide the restricted command set
             feature. """
         if "bye" == command:
+            self.change_status(u"terminating session", False)
             client = Client()
             client.disconnect()
             return u"terminating.."
