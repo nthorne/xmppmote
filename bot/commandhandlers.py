@@ -105,6 +105,21 @@ class CommandHandler(object):
                 body = response)
         return msg
 
+    def change_status(self, msg = u"awaiting command", available = True):
+        """ Helper function to change the bot availability status. """
+        if available:
+            presence_stanza = Presence(
+                stanza_type = u"available",
+                status = msg
+            )
+        else:
+            presence_stanza = Presence(
+                stanza_type = u"unavailable",
+                status = msg
+            )
+
+        self.client.get_stream().send(presence_stanza)
+
     def presence(self, stanza):
         """Handle 'available' (without 'type') and 'unavailable' <presence/>."""
         msg = u"%s has become " % (stanza.get_from())
