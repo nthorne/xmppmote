@@ -218,7 +218,7 @@ class RestrictedCommandHandler(CommandHandler):
             self.change_status(u"terminating session", False)
             client = Client()
             client.disconnect()
-            return u"terminating.."
+            return u"terminating"
 
 
         cmd = [command]
