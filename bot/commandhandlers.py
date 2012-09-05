@@ -103,9 +103,6 @@ class CommandHandler(object):
                 stanza_type = typ,
                 subject = subject,
                 body = response)
-        if body:
-            presence = Presence(status = "awaiting command")
-            return [msg, presence]
         return msg
 
     def presence(self, stanza):
@@ -205,7 +202,8 @@ class RestrictedCommandHandler(CommandHandler):
         if "bye" == command:
             client = Client()
             client.disconnect()
-            return
+            return u"terminating.."
+
 
         cmd = [command]
         if args:
