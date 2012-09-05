@@ -31,7 +31,7 @@ import unittest
 from commandhandlers import CommandHandler
 from commandhandlers import RestrictedCommandHandler
 from commandhandlers import UnsafeCommandHandler
-from pyxmpp.all import Message, Presence
+from pyxmpp.all import Message
 
 import configuration.commands
 import client
@@ -77,12 +77,13 @@ class CommandHandlerTest(mox.MoxTestBase):
         mock_subject = self.mox.CreateMockAnything()
         mock_body = self.mox.CreateMockAnything()
         mock_type = self.mox.CreateMockAnything()
+        mock_client = self.mox.CreateMockAnything()
 
         self.mox.StubOutWithMock(CommandHandler, "__init__")
         self.mox.StubOutWithMock(CommandHandler, "parse_body")
         self.mox.StubOutWithMock(CommandHandler, "log_message")
 
-        CommandHandler.__init__()
+        CommandHandler.__init__(mock_client)
 
         mock_stanza.get_subject().AndReturn(mock_subject)
         mock_stanza.get_body().AndReturn(mock_body)
@@ -98,13 +99,14 @@ class CommandHandlerTest(mox.MoxTestBase):
 
         self.mox.ReplayAll()
 
-        cmdhandler = CommandHandler()
+        cmdhandler = CommandHandler(mock_client)
         self.assertEqual(True, cmdhandler.message(mock_stanza))
 
     def test_message_subject(self):
         """ Ensure proper handling of a subject stanza. """
         mock_stanza = self.mox.CreateMockAnything()
         mock_body = self.mox.CreateMockAnything()
+        mock_client = self.mox.CreateMockAnything()
 
         self.mox.StubOutWithMock(CommandHandler, "__init__")
         self.mox.StubOutWithMock(CommandHandler, "parse_body")
@@ -113,10 +115,7 @@ class CommandHandlerTest(mox.MoxTestBase):
         self.mox.StubOutWithMock(Message, "__init__")
         self.mox.StubOutWithMock(Message, "__del__")
 
-        self.mox.StubOutWithMock(Presence, "__init__")
-        self.mox.StubOutWithMock(Presence, "__del__")
-
-        CommandHandler.__init__()
+        CommandHandler.__init__(mock_client)
 
         mock_stanza.get_subject().AndReturn("subject")
         mock_stanza.get_body().AndReturn(mock_body)
@@ -138,21 +137,18 @@ class CommandHandlerTest(mox.MoxTestBase):
                 subject = u"Re: subject",
                 body = "response")
 
-        Presence.__init__(
-                status = mox.IgnoreArg())
-        
         Message.__del__()
-        Presence.__del__()
 
         self.mox.ReplayAll()
 
-        cmdhandler = CommandHandler()
+        cmdhandler = CommandHandler(mock_client)
         self.assertNotEqual(None, cmdhandler.message(mock_stanza))
 
     def test_message_no_subject(self):
         """ Ensure proper handling of a message without subject. """
         mock_stanza = self.mox.CreateMockAnything()
         mock_body = self.mox.CreateMockAnything()
+        mock_client = self.mox.CreateMockAnything()
 
         self.mox.StubOutWithMock(CommandHandler, "__init__")
         self.mox.StubOutWithMock(CommandHandler, "parse_body")
@@ -161,10 +157,7 @@ class CommandHandlerTest(mox.MoxTestBase):
         self.mox.StubOutWithMock(Message, "__init__")
         self.mox.StubOutWithMock(Message, "__del__")
 
-        self.mox.StubOutWithMock(Presence, "__init__")
-        self.mox.StubOutWithMock(Presence, "__del__")
-
-        CommandHandler.__init__()
+        CommandHandler.__init__(mock_client)
 
         mock_stanza.get_subject()
         mock_stanza.get_body().AndReturn(mock_body)
@@ -186,18 +179,16 @@ class CommandHandlerTest(mox.MoxTestBase):
                 subject = None,
                 body = "response")
 
-        Presence.__init__(
-                status = mox.IgnoreArg())
-
         self.mox.ReplayAll()
 
-        cmdhandler = CommandHandler()
+        cmdhandler = CommandHandler(mock_client)
         self.assertNotEqual(None, cmdhandler.message(mock_stanza))
 
     def test_message_no_response(self):
         """ Test a mesage that does not yield a parse result. """
         mock_stanza = self.mox.CreateMockAnything()
         mock_body = self.mox.CreateMockAnything()
+        mock_client = self.mox.CreateMockAnything()
         self.mox.StubOutWithMock(CommandHandler, "__init__")
         self.mox.StubOutWithMock(CommandHandler, "parse_body")
         self.mox.StubOutWithMock(CommandHandler, "log_message")
@@ -205,10 +196,7 @@ class CommandHandlerTest(mox.MoxTestBase):
         self.mox.StubOutWithMock(Message, "__init__")
         self.mox.StubOutWithMock(Message, "__del__")
 
-        self.mox.StubOutWithMock(Presence, "__init__")
-        self.mox.StubOutWithMock(Presence, "__del__")
-
-        CommandHandler.__init__()
+        CommandHandler.__init__(mock_client)
 
         mock_stanza.get_subject()
         mock_stanza.get_body().AndReturn(mock_body)
@@ -230,17 +218,15 @@ class CommandHandlerTest(mox.MoxTestBase):
                 subject = None,
                 body = "unknown command")
 
-        Presence.__init__(
-                status = mox.IgnoreArg())
-
         self.mox.ReplayAll()
 
-        cmdhandler = CommandHandler()
+        cmdhandler = CommandHandler(mock_client)
         self.assertNotEqual(None, cmdhandler.message(mock_stanza))
 
     def test_message_no_body(self):
         """ Ensure proper handling of a bodiless message. """
         mock_stanza = self.mox.CreateMockAnything()
+        mock_client = self.mox.CreateMockAnything()
 
         self.mox.StubOutWithMock(CommandHandler, "__init__")
         self.mox.StubOutWithMock(CommandHandler, "parse_body")
@@ -249,10 +235,7 @@ class CommandHandlerTest(mox.MoxTestBase):
         self.mox.StubOutWithMock(Message, "__init__")
         self.mox.StubOutWithMock(Message, "__del__")
 
-        self.mox.StubOutWithMock(Presence, "__init__")
-        self.mox.StubOutWithMock(Presence, "__del__")
-
-        CommandHandler.__init__()
+        CommandHandler.__init__(mock_client)
 
         mock_stanza.get_subject()
         mock_stanza.get_body().AndReturn(None)
@@ -274,81 +257,87 @@ class CommandHandlerTest(mox.MoxTestBase):
 
         self.mox.ReplayAll()
 
-        cmdhandler = CommandHandler()
+        cmdhandler = CommandHandler(mock_client)
         self.assertNotEqual(None, cmdhandler.message(mock_stanza))
 
     def test_presence_control(self):
         """ Test the handling of presence stanzas. """
         mock_stanza = self.mox.CreateMockAnything()
+        mock_client = self.mox.CreateMockAnything()
         self.mox.StubOutWithMock(CommandHandler, "__init__")
         self.mox.StubOutWithMock(CommandHandler, "log_presence_control")
 
-        CommandHandler.__init__()
+        CommandHandler.__init__(mock_client)
         CommandHandler.log_presence_control(mock_stanza)
         mock_stanza.make_accept_response().AndReturn(True)
 
         self.mox.ReplayAll()
 
-        cmdhandler = CommandHandler()
+        cmdhandler = CommandHandler(mock_client)
         self.assertTrue(cmdhandler.presence_control(mock_stanza))
         
     def test_parse_body(self):
         """ Test the default message body parsing. """
         mock_body = self.mox.CreateMockAnything()
+        mock_client = self.mox.CreateMockAnything()
         self.mox.StubOutWithMock(CommandHandler, "__init__")
 
-        CommandHandler.__init__()
+        CommandHandler.__init__(mock_client)
 
         self.mox.ReplayAll()
 
-        cmdhandler = CommandHandler()
+        cmdhandler = CommandHandler(mock_client)
         self.assertEqual(mock_body, cmdhandler.parse_body(mock_body))
 
     def test_parse_none_body(self):
         """ Ensure proper behavior when parsing a nonexisting message body. """
+        mock_client = self.mox.CreateMockAnything()
         self.mox.StubOutWithMock(CommandHandler, "__init__")
 
-        CommandHandler.__init__()
+        CommandHandler.__init__(mock_client)
 
         self.mox.ReplayAll()
 
-        cmdhandler = CommandHandler()
+        cmdhandler = CommandHandler(mock_client)
         self.assertEqual(None, cmdhandler.parse_body(None))
 
     def test_do_command_no_args(self):
         """ Test handling of commands with no arguments. """
         mock_command = self.mox.CreateMockAnything()
+        mock_client = self.mox.CreateMockAnything()
         self.mox.StubOutWithMock(CommandHandler, "__init__")
 
-        CommandHandler.__init__()
+        CommandHandler.__init__(mock_client)
 
         self.mox.ReplayAll()
 
-        cmdhandler = CommandHandler()
+        cmdhandler = CommandHandler(mock_client)
         cmdhandler.do_command(mock_command)
 
     def test_do_command(self):
         """ Test handling of commands with arguments. """
         mock_command = self.mox.CreateMockAnything()
         mock_args = self.mox.CreateMockAnything()
+        mock_client = self.mox.CreateMockAnything()
         self.mox.StubOutWithMock(CommandHandler, "__init__")
 
-        CommandHandler.__init__()
+        CommandHandler.__init__(mock_client)
 
         self.mox.ReplayAll()
 
-        cmdhandler = CommandHandler()
+        cmdhandler = CommandHandler(mock_client)
         cmdhandler.do_command(mock_command, mock_args)
 
     def test_do_command_no_command_no_args(self):
         """ Ensure proper behavior when when a None command. """
+        mock_client = self.mox.CreateMockAnything()
         self.mox.StubOutWithMock(CommandHandler, "__init__")
 
-        CommandHandler.__init__()
+        CommandHandler.__init__(mock_client)
 
         self.mox.ReplayAll()
 
-        cmdhandler = CommandHandler()
+        cmdhandler = CommandHandler(mock_client)
         cmdhandler.do_command(None)
 
 
