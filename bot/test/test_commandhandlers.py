@@ -479,20 +479,22 @@ class RestrictedCommandHandlerTest(mox.MoxTestBase):
         restricted_handler = RestrictedCommandHandler()
         self.assertEquals(None, restricted_handler.parse_body(None))
 
-# This unit test does not work anymore when Client is a Borg
-    #def test_do_command_bye(self):
-        #""" Test executing the bye command. """
-        #command = "bye"
+    def test_do_command_bye(self):
+        """ Test executing the bye command. """
+        command = "bye"
 
-        #self.mox.StubOutWithMock(client.Client, "disconnect")
+        client_mock = self.mox.CreateMockAnything()
+        mock_stream = self.mox.CreateMockAnything()
 
-        #client.Client.disconnect()
+        client_mock.get_stream().AndReturn(mock_stream)
+        mock_stream.send(mox.IgnoreArg())
+        client_mock.disconnect()
 
-        #self.mox.ReplayAll()
+        self.mox.ReplayAll()
 
-        #restricted_handler = RestrictedCommandHandler()
+        restricted_handler = RestrictedCommandHandler()
     
-        #self.assertEquals(None, restricted_handler.do_command(command))
+        self.assertEquals(u"terminating", restricted_handler.do_command(command))
 
     def test_do_command_no_args(self):
         """ Test executing a command without arguments. """
