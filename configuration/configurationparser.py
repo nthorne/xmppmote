@@ -22,6 +22,11 @@
 This module is responsible for parsing the XMPPMote configuration file, and 
 presenting its key-value pairs to the application.
 """
+import os
+import sys
+sys.path.append(os.path.abspath(".."))
+
+from lib import borg
 
 from ConfigParser import SafeConfigParser
 
@@ -31,23 +36,13 @@ class FileNotFoundException(Exception):
     pass
 
 
-class Borg:
-    """ Implements the Borg pattern (i.e. shared state between (sub)type
-    instances, allowing us to keep away from the Singleton, which focuses on
-    instance rather than state) """
-    __shared_state = {}
-
-    def __init__(self):
-        self.__dict__ = self.__shared_state
-
-
-class ConfigurationParser(Borg):
+class ConfigurationParser(borg.make_borg()):
     """ Implements the ConfigurationParser type, which is responsible for
     presenting the XMPPMote configuration file's key-value pairs to the
     application. """
 
     def __init__(self):
-        Borg.__init__(self)
+        super(ConfigurationParser, self).__init__()
 
     def parse(self, rcfile):
         """ Parse the configuration file retrieved as given by the file-like
