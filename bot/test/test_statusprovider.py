@@ -57,6 +57,8 @@ class StatusProviderTest(mox.MoxTestBase):
 
         self.__setup_parser()
 
+        mock_timer = self.mox.CreateMockAnything()
+
         self.mox.StubOutWithMock(SafeConfigParser, "has_section")
         self.mox.StubOutWithMock(SafeConfigParser, "get")
         self.mox.StubOutWithMock(threading, "Timer")
@@ -69,16 +71,16 @@ class StatusProviderTest(mox.MoxTestBase):
         SafeConfigParser.get("status", "command").AndReturn("foobar")
         SafeConfigParser.get("status", "interval").AndReturn(3)
 
-        threading.Timer(3, mox.IgnoreArg())
-        threading.Thread.start()
+        threading.Timer(3, mox.IgnoreArg()).AndReturn(mock_timer)
+        mock_timer.start()
 
         subprocess.Popen.__init__("foobar", stdout = subprocess.PIPE)
         subprocess.Popen.communicate().AndReturn("result")
 
         CommandHandler.change_status("result")
 
-        threading.Timer(3, mox.IgnoreArg())
-        threading.Thread.start()
+        threading.Timer(3, mox.IgnoreArg()).AndReturn(mock_timer)
+        mock_timer.start()
 
         self.mox.ReplayAll()
 
@@ -150,6 +152,7 @@ class StatusProviderTest(mox.MoxTestBase):
         self.__setup_parser()
 
         mock_logger = self.mox.CreateMockAnything()
+        mock_timer = self.mox.CreateMockAnything()
 
         self.mox.StubOutWithMock(SafeConfigParser, "has_section")
         self.mox.StubOutWithMock(SafeConfigParser, "get")
@@ -164,8 +167,8 @@ class StatusProviderTest(mox.MoxTestBase):
         SafeConfigParser.get("status", "command").AndReturn("foobar")
         SafeConfigParser.get("status", "interval").AndReturn(3)
 
-        threading.Timer(3, mox.IgnoreArg())
-        threading.Thread.start()
+        threading.Timer(3, mox.IgnoreArg()).AndReturn(mock_timer)
+        mock_timer.start()
 
         subprocess.Popen.__init__("foobar", stdout = subprocess.PIPE)
         subprocess.Popen.communicate().AndRaise(OSError)
