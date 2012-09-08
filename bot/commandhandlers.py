@@ -118,7 +118,10 @@ class CommandHandler(object):
                 status = msg
             )
 
-        self.client.get_stream().send(presence_stanza)
+        client = Client()
+
+        if hasattr(client, "lock"):
+            client.get_stream().send(presence_stanza)
 
     def presence(self, stanza):
         """Handle 'available' (without 'type') and 'unavailable' <presence/>."""
