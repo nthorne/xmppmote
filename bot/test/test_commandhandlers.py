@@ -472,13 +472,6 @@ class RestrictedCommandHandlerTest(mox.MoxTestBase):
         """ Test executing the bye command. """
         command = "bye"
 
-        client_mock = self.mox.CreateMockAnything()
-        mock_stream = self.mox.CreateMockAnything()
-
-        client_mock.get_stream().AndReturn(mock_stream)
-        mock_stream.send(mox.IgnoreArg())
-        client_mock.disconnect()
-
         self.mox.ReplayAll()
 
         restricted_handler = RestrictedCommandHandler()
