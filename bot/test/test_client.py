@@ -54,14 +54,28 @@ class ClientTest(mox.MoxTestBase):
         JabberClient.__init__(mox.IgnoreArg(), jid, self.__pwd,
                 disco_name = "XMPPMote", disco_type = "bot",
                 tls_settings = None)
-        VersionHandler.__init__(mox.IgnoreArg())
-        commands.get_command_handler(mox.IgnoreArg()).AndReturn("foobar")
+        VersionHandler.__init__()
+        commands.get_command_handler().AndReturn("foobar")
         self.mox.ReplayAll()
 
         cli = Client(JID(self.__usr), self.__pwd)
 
         self.assertTrue(isinstance(cli.interface_providers[0], VersionHandler))
         self.assertEquals("foobar", cli.interface_providers[1])
+
+    def test_is_borg(self):
+        """ Make sure that Client inherits Borg properly. """
+
+        fst_instance = Client()
+        fst_instance.value = 42
+        snd_instance = Client()
+
+        self.assertEquals(42, fst_instance.value)
+        self.assertEquals(fst_instance.value, snd_instance.value)
+
+        snd_instance.value = 21
+        self.assertEquals(21, fst_instance.value)
+        self.assertEquals(fst_instance.value, snd_instance.value)
 
 
 if "__main__" == __name__:

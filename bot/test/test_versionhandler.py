@@ -35,7 +35,6 @@ class VersionHandlerTest(mox.MoxTestBase):
     """ This type provides tests cases for the VersionHandler type. """ 
     def test_get_features(self):
         """ Make sure that we have a handler for each feature. """
-        mock_client = self.mox.CreateMockAnything()
         mock_iq = self.mox.CreateMockAnything()
         new_mock_iq = self.mox.CreateMockAnything()
         mock_query = self.mox.CreateMockAnything()
@@ -55,7 +54,7 @@ class VersionHandlerTest(mox.MoxTestBase):
 
         self.mox.ReplayAll()
 
-        version_handler = VersionHandler(mock_client)
+        version_handler = VersionHandler()
         features = version_handler.get_features()
 
         for feat in features:
@@ -70,10 +69,9 @@ class VersionHandlerTest(mox.MoxTestBase):
 
     def test_set_features(self):
         """ Testing the set handlers of the Client. """
-        mock_client = self.mox.CreateMockAnything()
         self.mox.ReplayAll()
 
-        version_handler = VersionHandler(mock_client)
+        version_handler = VersionHandler()
         self.assertEquals([], version_handler.get_iq_set_handlers())
 
 

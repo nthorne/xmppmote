@@ -24,33 +24,35 @@ from pyxmpp.all import JID
 from pyxmpp.jabber.client import JabberClient
 from versionhandler import VersionHandler
 
-import logging
 import os
 import sys
 
 sys.path.append(os.path.abspath('..'))
-import configuration.commands
+from lib import borg
 
 
-class Client(JabberClient):
+# NOTE: Order of inheritance is important here, since method resolution order is
+# left-to-right, as parents types are defined.
+class Client(borg.make_borg(), JabberClient, object):
     """ This type subclasses the JabberClient type, in order to provde
         protocol-level setup. """
 
-    def __init__(self, jid, password):
-        self.__logger = logging.getLogger()
+    def __init__(self, jid = None, password = None):
+        super(Client, self).__init__()
 
-        # if bare JID is provided add a resource
-        if not jid.resource:
-            jid = JID(jid.node, jid.domain, "XMPPMote")
+        if None != jid and None != password:
+            # if bare JID is provided add a resource
+            if not jid.resource:
+                jid = JID(jid.node, jid.domain, "XMPPMote")
 
-        JabberClient.__init__(self, jid, password,
-            disco_name = "XMPPMote", disco_type = "bot",
-            tls_settings = None)
+            JabberClient.__init__(self, jid, password,
+                disco_name = "XMPPMote", disco_type = "bot",
+                tls_settings = None)
 
-        self.interface_providers = [
-            VersionHandler(self),
-            configuration.commands.get_command_handler(self),
-        ]
+            self.interface_providers = [
+                VersionHandler(),
+                configuration.commands.get_command_handler(),
+            ]
 
     def stream_state_changed(self, state, arg):
         """ Called upon stream state changes. """
@@ -76,3 +78,13 @@ class Client(JabberClient):
             self.__logger.info(u"Roster item updated:")
             self.log_roster_item(item)
 
+    def disconnect(self):
+        """ Overloaded in order to catch attempts to disconnect when the client
+        has not even been initialised. """
+
+        if hasattr(self, 'lock'):
+            JabberClient.disconnect(self)
+
+# this import needs to be here, since we've got a circular dependency between
+# the client module and the commands module
+import configuration.commands

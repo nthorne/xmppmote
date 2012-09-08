@@ -48,13 +48,13 @@ class MalformedCommand(Exception):
     pass
 
 
-def get_command_handler(instance):
+def get_command_handler():
     """ Returns the command handler that is to parse incoming commands. """
 
     config = ConfigurationParser()
     handlers = {
-        "restricted":   RestrictedCommandHandler(instance),
-        "passthru":     UnsafeCommandHandler(instance)
+        "restricted":   RestrictedCommandHandler(),
+        "passthru":     UnsafeCommandHandler()
     }
 
     try:

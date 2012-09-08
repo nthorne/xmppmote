@@ -31,10 +31,6 @@ class VersionHandler(object):
     
     implements(IIqHandlersProvider, IFeaturesProvider)
 
-    def __init__(self, client):
-        """Just remember who created this."""
-        self.client = client
-
     @classmethod
     def get_features(cls):
         """Return namespace which should the client include in its reply to a

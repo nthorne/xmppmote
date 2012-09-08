@@ -51,8 +51,6 @@ class GetCommandHandlerTest(mox.MoxTestBase):
         mock_file.closed = False
         mock_file.name = "foobar"
 
-        mock_client = self.mox.CreateMockAnything()
-
         self.mox.StubOutWithMock(SafeConfigParser, "get")
 
         config = ConfigurationParser()
@@ -66,12 +64,12 @@ class GetCommandHandlerTest(mox.MoxTestBase):
 
         self.mox.ReplayAll()
 
-        expected_type = commandhandlers.RestrictedCommandHandler(mock_client)
-        self.assertEquals(type(get_command_handler(mock_client)),
+        expected_type = commandhandlers.RestrictedCommandHandler()
+        self.assertEquals(type(get_command_handler()),
                           type(expected_type))
 
-        expected_type = commandhandlers.UnsafeCommandHandler(mock_client)
-        self.assertEquals(type(get_command_handler(mock_client)),
+        expected_type = commandhandlers.UnsafeCommandHandler()
+        self.assertEquals(type(get_command_handler()),
                           type(expected_type))
 
     def test_getting_nonexisting_commandhandler(self):
@@ -82,8 +80,6 @@ class GetCommandHandlerTest(mox.MoxTestBase):
         mock_file.closed = False
         mock_file.name = "foobar"
 
-        mock_client = self.mox.CreateMockAnything()
-
         self.mox.StubOutWithMock(SafeConfigParser, "get")
 
         config = ConfigurationParser()
@@ -93,7 +89,7 @@ class GetCommandHandlerTest(mox.MoxTestBase):
 
         self.mox.ReplayAll()
 
-        self.assertRaises(UnknownHandler, get_command_handler, mock_client)
+        self.assertRaises(UnknownHandler, get_command_handler)
 
     def test_getting_commandhandler_undefined_in_config(self):
         """ If either the section or the option that details the command handler
@@ -102,8 +98,6 @@ class GetCommandHandlerTest(mox.MoxTestBase):
         mock_file = self.mox.CreateMockAnything()
         mock_file.closed = False
         mock_file.name = "foobar"
-
-        mock_client = self.mox.CreateMockAnything()
 
         self.mox.StubOutWithMock(SafeConfigParser, "get")
 
@@ -116,8 +110,8 @@ class GetCommandHandlerTest(mox.MoxTestBase):
 
         self.mox.ReplayAll()
 
-        self.assertRaises(UnknownHandler, get_command_handler, mock_client)
-        self.assertRaises(UnknownHandler, get_command_handler, mock_client)
+        self.assertRaises(UnknownHandler, get_command_handler)
+        self.assertRaises(UnknownHandler, get_command_handler)
 
 class GetRestrictedSetTest(mox.MoxTestBase):
     """ Provides test cases for the restricted_set function. """

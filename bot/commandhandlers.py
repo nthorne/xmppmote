@@ -34,6 +34,7 @@ import os
 sys.path.append(os.path.abspath('..'))
 
 import configuration.commands
+from bot.client import Client
 
 class CommandHandler(object):
     """Provides the actual command functionality.
@@ -42,11 +43,6 @@ class CommandHandler(object):
     """
 
     implements(IMessageHandlersProvider, IPresenceHandlersProvider)
-    
-    def __init__(self, client):
-        """Just remember who created this."""
-        self.__logger = logging.getLogger()
-        self.client = client
     
     def get_message_handlers(self):
         """Return list of (message_type, message_handler) tuples.
@@ -128,7 +124,9 @@ class CommandHandler(object):
         status = stanza.get_status()
         if status:
             msg += u": " + status
-        self.__logger.info(msg)
+
+        logger = logging.getLogger()
+        logger.info(msg)
 
     def presence_control(self, stanza):
         """Handle subscription control <presence/> stanzas -- acknowledge
@@ -158,7 +156,9 @@ class CommandHandler(object):
             msg = msg + u'Type: "%s".' % (typ, )
         else:
             msg = msg + u'Type: "normal".'
-        self.__logger.info(msg)
+
+        logger = logging.getLogger()
+        logger.info(msg)
 
     def log_presence_control(self, stanza):
         """ Construct a log message from a <presence/> stanza. """
@@ -173,7 +173,8 @@ class CommandHandler(object):
         elif typ == "unsubscribed":
             msg += u" has canceled our subscription of his presence."
 
-        self.__logger.info(msg)
+        logger = logging.getLogger()
+        logger.info(msg)
 
 
 class RestrictedCommandHandler(CommandHandler):
@@ -202,7 +203,8 @@ class RestrictedCommandHandler(CommandHandler):
         """ Overridden in order to provide the restricted command set
             feature. """
         if "bye" == command:
-            self.client.disconnect()
+            client = Client()
+            client.disconnect()
             return
 
         cmd = [command]

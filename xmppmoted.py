@@ -42,7 +42,7 @@ class XMPPMoteDaemon(Daemon):
     daemon. """
 
     def __init__(self):
-        self.__usr = self.__pwd = self.__client = None
+        self.__usr = self.__pwd =  None
 
         self.__parse_config_file()
 
@@ -61,8 +61,8 @@ class XMPPMoteDaemon(Daemon):
         """ This method overrides Daemon.stop in order to disconnect the session
         when stopping the daemon. """
 
-        if self.__client:
-            self.__client.disconnect()
+        client = Client()
+        client.disconnect()
 
         Daemon.stop(self)
 
@@ -73,12 +73,12 @@ class XMPPMoteDaemon(Daemon):
 
         self.__setup_logging()
 
-        self.__client = Client(JID(self.__usr), self.__pwd)
-        self.__client.connect()
+        client = Client(JID(self.__usr), self.__pwd)
+        client.connect()
 
-        self.__client.loop(1)
+        client.loop(1)
 
-        self.__client.disconnect()
+        client.disconnect()
 
     @staticmethod
     def __parse_config_file():
