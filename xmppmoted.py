@@ -72,15 +72,20 @@ class XMPPMoteDaemon(Daemon):
         connecting the XMPP client, and entering the application message loop.
         """
 
-        self.__setup_logging()
+        try:
+            self.__setup_logging()
 
-        client = Client(JID(self.__usr), self.__pwd)
-        client.connect()
+            client = Client(JID(self.__usr), self.__pwd)
+            client.connect()
 
-        provider = StatusProvider()
-        provider.start()
+            provider = StatusProvider()
+            provider.start()
 
-        client.loop(1)
+            client.loop(1)
+        except Exception, exc:
+            logger = logging.getLogger()
+            logger.critical(u"encountered exception %s. terminating XMPPMote." %
+                           repr(exc))
 
         client.disconnect()
 
