@@ -21,3 +21,63 @@
 
 StatusProvider is responsible for providing the current XMPPMote status, as sent
 to the chat counterpart. """
+
+import sys
+import os
+
+sys.path.append(os.path.abspath(".."))
+
+from configuration.configurationparser import ConfigurationParser
+from ConfigParser import NoOptionError
+from bot.client import Client
+
+import threading
+import subprocess
+import logging
+
+class StatusProvider(object):
+    """ This type provides configurable status updates to the XMPPMote bot. """
+
+    def __init__(self):
+        self.__command = None
+        self.__interval = None
+
+        parser = ConfigurationParser()
+
+        logger = logging.getLogger()
+
+        if parser.has_section("status"):
+            try:
+                logger.info("reading configured status command")
+
+                self.__command = parser.get("status", "command")
+                self.__interval = int(parser.get("status", "interval"))
+
+                logger.info("executing '%s' every %d seconds" % (self.__command,
+                                                                 self.__interval))
+            except NoOptionError:
+                pass
+
+
+    def start(self):
+        """ This method is responsible for setting a timer that, when having
+        expired after the configured interval, executes the timeout method. """
+
+        if self.__command and self.__interval:
+            timer = threading.Timer(self.__interval, self.timeout)
+            timer.start()
+
+    def timeout(self):
+        """ This method is responsible for executing the configured command. """
+
+        try:
+            subproc = subprocess.Popen(self.__command, stdout = subprocess.PIPE)
+            stdout = subproc.communicate()[0]
+        except OSError:
+            logger = logging.getLogger()
+            logger.error("%s: error executing status command.")
+            return
+
+        client = Client()
+        client.change_status(stdout)
+        self.start()

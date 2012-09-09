@@ -31,7 +31,7 @@ import unittest
 from ConfigParser import SafeConfigParser
 from ConfigParser import NoOptionError
 from statusprovider import StatusProvider
-from commandhandlers import CommandHandler
+from bot.client import Client
 from configuration.configurationparser import ConfigurationParser
 import threading
 import subprocess
@@ -65,7 +65,7 @@ class StatusProviderTest(mox.MoxTestBase):
         self.mox.StubOutWithMock(threading.Thread, "start")
         self.mox.StubOutWithMock(subprocess.Popen, "__init__")
         self.mox.StubOutWithMock(subprocess.Popen, "communicate")
-        self.mox.StubOutWithMock(CommandHandler, "change_status")
+        self.mox.StubOutWithMock(Client, "change_status")
 
         SafeConfigParser.has_section("status").AndReturn(True)
         SafeConfigParser.get("status", "command").AndReturn("foobar")
@@ -75,9 +75,9 @@ class StatusProviderTest(mox.MoxTestBase):
         mock_timer.start()
 
         subprocess.Popen.__init__("foobar", stdout = subprocess.PIPE)
-        subprocess.Popen.communicate().AndReturn("result")
+        subprocess.Popen.communicate().AndReturn(("result", ""))
 
-        CommandHandler.change_status("result")
+        Client.change_status("result")
 
         threading.Timer(3, mox.IgnoreArg()).AndReturn(mock_timer)
         mock_timer.start()
@@ -161,7 +161,6 @@ class StatusProviderTest(mox.MoxTestBase):
         self.mox.StubOutWithMock(subprocess.Popen, "__init__")
         self.mox.StubOutWithMock(subprocess.Popen, "communicate")
         self.mox.StubOutWithMock(logging, "getLogger")
-        self.mox.StubOutWithMock(CommandHandler, "change_status")
 
         SafeConfigParser.has_section("status").AndReturn(True)
         SafeConfigParser.get("status", "command").AndReturn("foobar")
@@ -172,6 +171,10 @@ class StatusProviderTest(mox.MoxTestBase):
 
         subprocess.Popen.__init__("foobar", stdout = subprocess.PIPE)
         subprocess.Popen.communicate().AndRaise(OSError)
+
+        logging.getLogger().AndReturn(mock_logger)
+        mock_logger.info(mox.IgnoreArg())
+        mock_logger.info(mox.IgnoreArg())
 
         logging.getLogger().AndReturn(mock_logger)
         mock_logger.error("%s: error executing status command.")
