@@ -23,6 +23,7 @@ connection, as well as the appropriate event logging. """
 from pyxmpp.all import JID
 from pyxmpp.jabber.client import JabberClient
 from versionhandler import VersionHandler
+from pyxmpp.all import Presence
 
 import os
 import sys
@@ -84,6 +85,22 @@ class Client(borg.make_borg(), JabberClient, object):
 
         if hasattr(self, 'lock'):
             JabberClient.disconnect(self)
+
+    def change_status(self, msg = u"awaiting command", available = True):
+        """ Helper function to change the bot availability status. """
+        if available:
+            presence_stanza = Presence(
+                stanza_type = u"available",
+                status = msg
+            )
+        else:
+            presence_stanza = Presence(
+                stanza_type = u"unavailable",
+                status = msg
+            )
+
+        if hasattr(self, "lock"):
+            self.get_stream().send(presence_stanza)
 
 # this import needs to be here, since we've got a circular dependency between
 # the client module and the commands module

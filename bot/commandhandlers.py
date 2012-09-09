@@ -21,7 +21,7 @@ These command handlers are responsible for handling the commands
 received from a remote cllient, by means of eg. executing the
 command, or comparing it to a list of allowed commands. """
 
-from pyxmpp.all import Message, Presence
+from pyxmpp.all import Message
 from pyxmpp.interface import implements
 from pyxmpp.interfaces import IMessageHandlersProvider
 from pyxmpp.interfaces import IPresenceHandlersProvider
@@ -105,25 +105,8 @@ class CommandHandler(object):
                 body = response)
         return msg
 
-    def change_status(self, msg = u"awaiting command", available = True):
-        """ Helper function to change the bot availability status. """
-        if available:
-            presence_stanza = Presence(
-                stanza_type = u"available",
-                status = msg
-            )
-        else:
-            presence_stanza = Presence(
-                stanza_type = u"unavailable",
-                status = msg
-            )
-
-        client = Client()
-
-        if hasattr(client, "lock"):
-            client.get_stream().send(presence_stanza)
-
-    def presence(self, stanza):
+    @staticmethod
+    def presence(stanza):
         """Handle 'available' (without 'type') and 'unavailable' <presence/>."""
         msg = u"%s has become " % (stanza.get_from())
         typ = stanza.get_type()
@@ -160,7 +143,8 @@ class CommandHandler(object):
         """ Override this one for altered command handling. """
         pass
 
-    def log_message(self, stanza, subject, body, typ):
+    @staticmethod
+    def log_message(stanza, subject, body, typ):
         """ Construct a log message from a received message. """
         msg = u'Message from %s received.' % (unicode(stanza.get_from(), ))
         if subject:
@@ -175,7 +159,8 @@ class CommandHandler(object):
         logger = logging.getLogger()
         logger.info(msg)
 
-    def log_presence_control(self, stanza):
+    @staticmethod
+    def log_presence_control(stanza):
         """ Construct a log message from a <presence/> stanza. """
         msg = unicode(stanza.get_from())
         typ = stanza.get_type()
@@ -218,8 +203,8 @@ class RestrictedCommandHandler(CommandHandler):
         """ Overridden in order to provide the restricted command set
             feature. """
         if "bye" == command:
-            self.change_status(u"terminating session", False)
             client = Client()
+            client.change_status(u"terminating session", False)
             client.disconnect()
             return u"terminating"
 
@@ -234,7 +219,8 @@ class RestrictedCommandHandler(CommandHandler):
 
         return body
 
-    def make_syscall(self, command):
+    @staticmethod
+    def make_syscall(command):
         """ Execute command in a subprocess. """
         subp = subprocess.Popen(command, stdout=subprocess.PIPE)
         stdoutdata = subp.communicate()[0]
