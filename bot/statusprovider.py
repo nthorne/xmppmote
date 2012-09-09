@@ -42,6 +42,8 @@ class StatusProvider(object):
         self.__command = None
         self.__interval = None
 
+        self.__previous_result = None
+
         parser = ConfigurationParser()
 
         logger = logging.getLogger()
@@ -53,8 +55,8 @@ class StatusProvider(object):
                 self.__command = parser.get("status", "command")
                 self.__interval = int(parser.get("status", "interval"))
 
-                logger.info("executing '%s' every %d seconds" % (self.__command,
-                                                                 self.__interval))
+                logger.info("executing '%s' every %d sec" % (self.__command,
+                                                             self.__interval))
             except NoOptionError:
                 pass
 
@@ -78,6 +80,9 @@ class StatusProvider(object):
             logger.error("%s: error executing status command.")
             return
 
-        client = Client()
-        client.change_status(stdout)
-        self.start()
+        if self.__previous_result != stdout:
+            client = Client()
+            client.change_status(stdout)
+            self.start()
+
+            self.__previous_result = stdout

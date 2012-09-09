@@ -186,6 +186,61 @@ class StatusProviderTest(mox.MoxTestBase):
         # We'll have to emulate a timeout here..
         provider.timeout()
 
+    def test_duplicated_command_output(self):
+        """ Make sure that StatusProvider only updates the status if the command
+        yields a different result than it did previously. """
+
+        self.__setup_parser()
+
+        mock_timer = self.mox.CreateMockAnything()
+
+        self.mox.StubOutWithMock(SafeConfigParser, "has_section")
+        self.mox.StubOutWithMock(SafeConfigParser, "get")
+        self.mox.StubOutWithMock(threading, "Timer")
+        self.mox.StubOutWithMock(threading.Thread, "start")
+        self.mox.StubOutWithMock(subprocess.Popen, "__init__")
+        self.mox.StubOutWithMock(subprocess.Popen, "communicate")
+        self.mox.StubOutWithMock(Client, "change_status")
+
+        SafeConfigParser.has_section("status").AndReturn(True)
+        SafeConfigParser.get("status", "command").AndReturn("foobar")
+        SafeConfigParser.get("status", "interval").AndReturn(3)
+
+        threading.Timer(3, mox.IgnoreArg()).AndReturn(mock_timer)
+        mock_timer.start()
+
+        subprocess.Popen.__init__("foobar", stdout = subprocess.PIPE)
+        subprocess.Popen.communicate().AndReturn(("result", ""))
+
+        Client.change_status("result")
+
+        threading.Timer(3, mox.IgnoreArg()).AndReturn(mock_timer)
+        mock_timer.start()
+
+        subprocess.Popen.__init__("foobar", stdout = subprocess.PIPE)
+        subprocess.Popen.communicate().AndReturn(("result", ""))
+
+        # This time we expect no status change, since this is the same result as
+        # returned previously..
+        #Client.change_status("result")
+
+        threading.Timer(3, mox.IgnoreArg()).AndReturn(mock_timer)
+        mock_timer.start()
+
+        subprocess.Popen.__init__("foobar", stdout = subprocess.PIPE)
+        subprocess.Popen.communicate().AndReturn(("another result", ""))
+
+        Client.change_status("another result")
+
+        self.mox.ReplayAll()
+
+        provider = StatusProvider()
+        provider.start()
+        # We'll have to emulate a timeout here..
+        provider.timeout()
+        provider.timeout()
+        provider.timeout()
+
 
 if "__main__" == __name__:
     unittest.main()
