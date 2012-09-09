@@ -22,6 +22,7 @@ MKDIR=$(command -v mkdir)
 BASENAME=$(command -v basename)
 CHOWN=$(command -v chown)
 CHMOD=$(command -v chmod)
+SED=$(command -v sed)
 
 
 
@@ -85,6 +86,7 @@ function check_preconditions()
   test -z $MKDIR && error "mkdir: no such command"
   test -z $CHOWN && error "chown: no such command"
   test -z $CHMOD && error "chmod: no such command"
+  test -z $SED && error "sed: no such command"
 
   local readonly expected_dirs=(
     $INIT_DIR
@@ -119,7 +121,12 @@ function install_xmppmote()
   pushd $INSTALL_PATH >/dev/null || error "unable to pushd to $INSTALL_PATH"
 
   echo ".. creating default configuration file"
-  $CP xmppmoterc.example xmppmoterc || error "unable to create default config"
+  if [[ -w /var/run ]]
+  then
+    $SED 's/#\(pidfile:.*\)/\1/' xmppmoterc.example > xmppmoterc
+  else
+    $CP xmppmoterc.example xmppmoterc || error "unable to create default config"
+  fi
 
   echo ".. changing configuration file's owner and permissions"
   $CHOWN daemon:daemon xmppmoterc || error "unable to make daemon owner of xmppmoterc"

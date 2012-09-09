@@ -9,6 +9,7 @@
 # Other options that can be set here are pidfile, which details the full path to
 # the pidfile where the daemon's pid is stored (defaults to /tmp/xmppmote.pid).
 handler: restricted
+#pidfile: /var/run/xmppmote.pid
 
 [commands]
 # In this section we defined the commands allowed by the restricted section. The
