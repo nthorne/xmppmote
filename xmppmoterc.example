@@ -25,3 +25,8 @@ command3: pwd::
 #   XMPPMote process via chat.
 command4: bye::Terminate XMPPMote
 
+[status]
+# In this section, you can enter a command that is to be executed at the given
+# interval
+command: date
+interval: 60
