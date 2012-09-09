@@ -25,6 +25,7 @@ import os
 sys.path.append(os.path.abspath(".."))
 
 from bot.client import Client
+from bot.statusprovider import StatusProvider
 from ConfigParser import SafeConfigParser
 from configuration.configurationparser import ConfigurationParser
 from configuration import credentials
@@ -87,6 +88,8 @@ class XMPPMoteTest(mox.MoxTestBase):
         """ Test the run method of the XMPPMoteDaemon, using Mox in order to
         verify proper connection procedure. """
 
+        self.mox.StubOutWithMock(StatusProvider, "__init__")
+        self.mox.StubOutWithMock(StatusProvider, "start")
         self.mox.StubOutWithMock(Client, "__init__")
         self.mox.StubOutWithMock(Client, "connect")
         self.mox.StubOutWithMock(Client, "loop")
@@ -106,6 +109,10 @@ class XMPPMoteTest(mox.MoxTestBase):
         Daemon.start(mox.IgnoreArg())
 
         credentials.get_credentials().AndReturn((self.__usr, self.__pwd))
+
+        StatusProvider.__init__()
+        StatusProvider.start()
+
         Client.__init__(JID(self.__usr), self.__pwd)
 
         Client.connect()

@@ -24,6 +24,7 @@ protocol.  """
 
 
 from bot.client import Client
+from bot.statusprovider import StatusProvider
 from ConfigParser import NoOptionError
 from ConfigParser import NoSectionError
 from configuration.configurationparser import ConfigurationParser
@@ -75,6 +76,9 @@ class XMPPMoteDaemon(Daemon):
 
         client = Client(JID(self.__usr), self.__pwd)
         client.connect()
+
+        provider = StatusProvider()
+        provider.start()
 
         client.loop(1)
 
