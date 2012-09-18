@@ -33,7 +33,7 @@ from ConfigParser import NoSectionError
 from ConfigParser import NoOptionError
 
 
-REPO_URL =  "https://github.com/nthorne/xmppmote"
+REPO_URL =  "https://api.github.com/repos/nthorne/xmppmote"
 VERSION_FILE = "version.py"
 DEFAULT_MODEL = "stable"
 DEFAULT_INTERVAL = 3600
