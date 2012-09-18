@@ -123,6 +123,9 @@ class UpdateNotifyerTest(mox.MoxTestBase):
         StableUpdater.check().AndReturn(True)
         Client.change_status(mox.IgnoreArg())
 
+        threading.Timer(3600, mox.IgnoreArg()).AndReturn(mock_timer)
+        mock_timer.start()
+
         self.mox.ReplayAll()
 
         notifyer = UpdateNotifyer(self.__remote_url)
@@ -148,10 +151,97 @@ class UpdateNotifyerTest(mox.MoxTestBase):
 
         StableUpdater.check().AndReturn(False)
 
+        threading.Timer(3600, mox.IgnoreArg()).AndReturn(mock_timer)
+        mock_timer.start()
+
         self.mox.ReplayAll()
 
         notifyer = UpdateNotifyer(self.__remote_url)
         notifyer.start()
+        notifyer.timeout()
+
+    def test_timeout_update_still_available(self):
+        """ Make sure that we do not spam with software update notices. Once
+        there has been an update notification, updates found thereafter should
+        not be indicated. """
+
+        mock_timer = self.mox.CreateMockAnything()
+
+        self.mox.StubOutWithMock(StableUpdater, "__init__")
+        self.mox.StubOutWithMock(StableUpdater, "check")
+        self.mox.StubOutWithMock(threading, "Timer")
+        self.mox.StubOutWithMock(threading.Thread, "start")
+        self.mox.StubOutWithMock(Client, "change_status")
+
+        StableUpdater.__init__(self.__remote_url)
+
+        threading.Timer(3600, mox.IgnoreArg()).AndReturn(mock_timer)
+        mock_timer.start()
+
+        StableUpdater.check().AndReturn(True)
+        Client.change_status(mox.IgnoreArg())
+
+        threading.Timer(3600, mox.IgnoreArg()).AndReturn(mock_timer)
+        mock_timer.start()
+
+        StableUpdater.check().AndReturn(True)
+
+        threading.Timer(3600, mox.IgnoreArg()).AndReturn(mock_timer)
+        mock_timer.start()
+
+        self.mox.ReplayAll()
+
+        notifyer = UpdateNotifyer(self.__remote_url)
+        notifyer.start()
+        notifyer.timeout()
+        notifyer.timeout()
+
+    def test_toggle_update_availability(self):
+        """ Make sure that the update indicaiton is reset if an update all of a
+        sudden is not available. """
+
+        mock_timer = self.mox.CreateMockAnything()
+
+        self.mox.StubOutWithMock(StableUpdater, "__init__")
+        self.mox.StubOutWithMock(StableUpdater, "check")
+        self.mox.StubOutWithMock(threading, "Timer")
+        self.mox.StubOutWithMock(threading.Thread, "start")
+        self.mox.StubOutWithMock(Client, "change_status")
+
+        StableUpdater.__init__(self.__remote_url)
+
+        threading.Timer(3600, mox.IgnoreArg()).AndReturn(mock_timer)
+        mock_timer.start()
+
+        StableUpdater.check().AndReturn(True)
+        Client.change_status(mox.IgnoreArg())
+
+        threading.Timer(3600, mox.IgnoreArg()).AndReturn(mock_timer)
+        mock_timer.start()
+
+        StableUpdater.check().AndReturn(True)
+
+        threading.Timer(3600, mox.IgnoreArg()).AndReturn(mock_timer)
+        mock_timer.start()
+
+        StableUpdater.check().AndReturn(False)
+
+        threading.Timer(3600, mox.IgnoreArg()).AndReturn(mock_timer)
+        mock_timer.start()
+
+        StableUpdater.check().AndReturn(True)
+        Client.change_status(mox.IgnoreArg())
+
+        threading.Timer(3600, mox.IgnoreArg()).AndReturn(mock_timer)
+        mock_timer.start()
+
+        self.mox.ReplayAll()
+
+        notifyer = UpdateNotifyer(self.__remote_url)
+        notifyer.start()
+        notifyer.timeout()
+        notifyer.timeout()
+        notifyer.timeout()
         notifyer.timeout()
 
 

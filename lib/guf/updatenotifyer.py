@@ -34,6 +34,7 @@ from bleedingedgeupdater import BleedingEdgeUpdater
 
 import threading
 
+import logging
 
 class UpdateNotifyer(object):
     """ UpdateNotifyer is responsible for querying the selected updater at the
@@ -65,8 +66,12 @@ class UpdateNotifyer(object):
     def timeout(self):
         """ Called upon by the Timer when self.__interval has elapsed. """
 
+        had_update = self.has_update
+
         self.has_update = self.__updater.check()
 
-        if self.has_update:
+        if self.has_update and not had_update:
             cli = Client()
             cli.change_status(u"software update available...")
+
+        self.start()
