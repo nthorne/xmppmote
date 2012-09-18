@@ -31,3 +31,13 @@ command4: bye::Terminate XMPPMote
 # interval
 command: date
 interval: 60
+
+[updates]
+# In this section, you configure the software update service. If the action
+# option is set to notify, the update model detailed by the model option
+# (valid options are stable, or simply leave it unset - which compares the
+# version defined in version.py with the version defined in origin's version.py)
+# is used to query the remote repository for a new software version at the
+# configured interval (defaults to an hourly check if left unset).
+action: notify
+model: stable
