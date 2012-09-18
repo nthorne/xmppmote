@@ -46,7 +46,7 @@ class StableUpdater(Updater):
     def __init__(self, remote_url):
         self.__remote_url = remote_url
 
-        self.has_new_version = False
+        has_new_version = False
         self.remote_version = None
 
         self.__version_regex = re.compile(r"version\s*=.*")
@@ -59,7 +59,7 @@ class StableUpdater(Updater):
         github json API, where we download the version file, and inspect its
         contents. """
 
-        self.has_new_version = False
+        has_new_version = False
         self.remote_version = None
 
         logger = logging.getLogger()
@@ -89,7 +89,9 @@ class StableUpdater(Updater):
         self.remote_version = self.__parse_remote_version(remote_src)
 
         if self.remote_version and hasattr(version, "version"):
-            self.has_new_version = version.version < self.remote_version
+            has_new_version = version.version < self.remote_version
+
+        return has_new_version
 
     def __parse_remote_version(self, remote_src):
         """ Parse the string contents of the version file, attempting to extract

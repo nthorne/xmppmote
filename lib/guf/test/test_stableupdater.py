@@ -87,9 +87,8 @@ version =
         self.mox.ReplayAll()
 
         stable_updater = StableUpdater(self.__remote_url)
-        stable_updater.check()
 
-        self.assertTrue(stable_updater.has_new_version)
+        self.assertTrue(stable_updater.check())
         self.assertEquals(self.__mocked_remote_version,
                           stable_updater.remote_version)
 
@@ -119,9 +118,8 @@ version =
         self.mox.ReplayAll()
 
         stable_updater = StableUpdater(self.__remote_url)
-        stable_updater.check()
 
-        self.assertTrue(not stable_updater.has_new_version)
+        self.assertTrue(not stable_updater.check())
         self.assertEquals(version.version,
                           stable_updater.remote_version)
 
@@ -138,9 +136,8 @@ version =
         self.mox.ReplayAll()
 
         stable_updater = StableUpdater(self.__remote_url)
-        stable_updater.check()
 
-        self.assertTrue(not stable_updater.has_new_version)
+        self.assertTrue(not stable_updater.check())
         self.assertEquals(None, stable_updater.remote_version)
 
     def test_github_response_no_content(self):
@@ -163,9 +160,8 @@ version =
         self.mox.ReplayAll()
 
         stable_updater = StableUpdater(self.__remote_url)
-        stable_updater.check()
 
-        self.assertTrue(not stable_updater.has_new_version)
+        self.assertTrue(not stable_updater.check())
         self.assertEquals(None, stable_updater.remote_version)
 
     def test_no_version_version_defined(self):
@@ -194,9 +190,8 @@ version =
         self.mox.ReplayAll()
 
         stable_updater = StableUpdater(self.__remote_url)
-        stable_updater.check()
 
-        self.assertTrue(not stable_updater.has_new_version)
+        self.assertTrue(not stable_updater.check())
 
     def test_no_remote_version(self):
         """ If there is no remote version to be found, ensure that no updates
@@ -224,9 +219,8 @@ version =
         self.mox.ReplayAll()
 
         stable_updater = StableUpdater(self.__remote_url)
-        stable_updater.check()
 
-        self.assertTrue(not stable_updater.has_new_version)
+        self.assertTrue(not stable_updater.check())
         self.assertEquals(None, stable_updater.remote_version)
 
     def test_mutiple_remote_versions(self):
@@ -255,9 +249,8 @@ version =
         self.mox.ReplayAll()
 
         stable_updater = StableUpdater(self.__remote_url)
-        stable_updater.check()
 
-        self.assertTrue(not stable_updater.has_new_version)
+        self.assertTrue(not stable_updater.check())
         self.assertEquals(None, stable_updater.remote_version)
 
     def test_empty_response_read(self):
@@ -277,9 +270,8 @@ version =
         self.mox.ReplayAll()
 
         stable_updater = StableUpdater(self.__remote_url)
-        stable_updater.check()
 
-        self.assertTrue(not stable_updater.has_new_version)
+        self.assertTrue(not stable_updater.check())
         self.assertEquals(None, stable_updater.remote_version)
 
     def test_malformed_base64_string(self):
@@ -307,9 +299,8 @@ version =
         self.mox.ReplayAll()
 
         stable_updater = StableUpdater(self.__remote_url)
-        stable_updater.check()
 
-        self.assertTrue(not stable_updater.has_new_version)
+        self.assertTrue(not stable_updater.check())
         self.assertEquals(None, stable_updater.remote_version)
 
     def test_invalid_url(self):
@@ -325,9 +316,8 @@ version =
         self.mox.ReplayAll()
 
         stable_updater = StableUpdater(self.__remote_url)
-        stable_updater.check()
 
-        self.assertTrue(not stable_updater.has_new_version)
+        self.assertTrue(not stable_updater.check())
         self.assertEquals(None, stable_updater.remote_version)
 
     def test_malformed_version_variable_definition(self):
@@ -356,9 +346,8 @@ version =
         self.mox.ReplayAll()
 
         stable_updater = StableUpdater(self.__remote_url)
-        stable_updater.check()
 
-        self.assertTrue(not stable_updater.has_new_version)
+        self.assertTrue(not stable_updater.check())
         self.assertEquals(None, stable_updater.remote_version)
 
     def test_version_check_fails_second_time(self):
@@ -389,15 +378,12 @@ version =
         self.mox.ReplayAll()
 
         stable_updater = StableUpdater(self.__remote_url)
-        stable_updater.check()
 
-        self.assertTrue(stable_updater.has_new_version)
+        self.assertTrue(stable_updater.check())
         self.assertEquals(self.__mocked_remote_version,
                           stable_updater.remote_version)
 
-        stable_updater.check()
-
-        self.assertTrue(not stable_updater.has_new_version)
+        self.assertTrue(not stable_updater.check())
         self.assertEquals(None, stable_updater.remote_version)
 
     def test_github_has_old_version(self):
@@ -426,9 +412,8 @@ version =
         self.mox.ReplayAll()
 
         stable_updater = StableUpdater(self.__remote_url)
-        stable_updater.check()
 
-        self.assertTrue(not stable_updater.has_new_version)
+        self.assertTrue(not stable_updater.check())
         self.assertEquals(self.__mocked_remote_version,
                           stable_updater.remote_version)
 
