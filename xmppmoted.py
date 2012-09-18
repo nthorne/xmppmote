@@ -29,6 +29,7 @@ from ConfigParser import NoOptionError
 from ConfigParser import NoSectionError
 from configuration.configurationparser import ConfigurationParser
 from configuration import credentials
+from configuration import updates
 from lib.daemon import Daemon
 from pyxmpp.all import JID
 import codecs
@@ -80,6 +81,10 @@ class XMPPMoteDaemon(Daemon):
 
             provider = StatusProvider()
             provider.start()
+
+            update_handler = updates.get_update_handler()
+            if update_handler:
+                update_handler.start()
 
             client.loop(1)
         except Exception, exc:

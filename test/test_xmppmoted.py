@@ -29,6 +29,7 @@ from bot.statusprovider import StatusProvider
 from ConfigParser import SafeConfigParser
 from configuration.configurationparser import ConfigurationParser
 from configuration import credentials
+from configuration import updates
 from lib.daemon import Daemon
 from pyxmpp.all import JID
 import __builtin__
@@ -88,6 +89,8 @@ class XMPPMoteTest(mox.MoxTestBase):
         """ Test the run method of the XMPPMoteDaemon, using Mox in order to
         verify proper connection procedure. """
 
+        mock_update_handler = self.mox.CreateMockAnything()
+
         self.mox.StubOutWithMock(StatusProvider, "__init__")
         self.mox.StubOutWithMock(StatusProvider, "start")
         self.mox.StubOutWithMock(Client, "__init__")
@@ -103,6 +106,8 @@ class XMPPMoteTest(mox.MoxTestBase):
                                  "_XMPPMoteDaemon__get_pidfile")
         self.mox.StubOutWithMock(credentials, "get_credentials")
 
+        self.mox.StubOutWithMock(updates, "get_update_handler")
+
         xmppmoted.XMPPMoteDaemon._XMPPMoteDaemon__parse_config_file()
         xmppmoted.XMPPMoteDaemon._XMPPMoteDaemon__get_pidfile().AndReturn(None)
 
@@ -112,6 +117,9 @@ class XMPPMoteTest(mox.MoxTestBase):
 
         StatusProvider.__init__()
         StatusProvider.start()
+
+        updates.get_update_handler().AndReturn(mock_update_handler)
+        mock_update_handler.start()
 
         Client.__init__(JID(self.__usr), self.__pwd)
 
