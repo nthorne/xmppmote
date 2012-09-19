@@ -24,6 +24,7 @@ IFS='
 '
 
 readonly COVERAGE=$(command -v coverage)
+BRANCH_COVERAGE=
 
 
 function usage()
@@ -34,7 +35,8 @@ Usage: $(basename $0) [OPTIONS]
 Tiny wrapper script for running all unit tests and showing test coverage.
 
 Where valid OPTIONS are:
-  -h, --help  display usage
+  -h, --help    display usage
+  -b, --branch  show branch coverage
 
 Usage_Heredoc
 }
@@ -54,6 +56,14 @@ function parse_options()
         usage
         exit 0
         ;;
+      -b|--branch)
+        if [[ -z $BRANCH_COVERAGE ]]
+        then
+          BRANCH_COVERAGE=1
+        else
+          error "duplicate branch flag"
+        fi
+        ;;
       *)
         error "Unknown option: $1. Try $(basename $0) -h for options."
         ;;
@@ -70,8 +80,16 @@ function check_preconditions()
 
 function get_coverage()
 {
-  coverage run --omit='*/__init__.py,*/test_*,run_all_tests.py' run_all_tests.py
-  coverage report -m
+  local readonly omit_pattern='*/__init__.py,*/test_*,run_all_tests.py'
+  if [[ -z $BRANCH_COVERAGE ]]
+  then
+    coverage run --omit=$omit_pattern run_all_tests.py
+    coverage report -m
+  else
+    coverage run --omit=$omit_pattern --branch run_all_tests.py 
+    coverage html
+    test -d htmlcov && firefox htmlcov/index.html
+  fi
 }
 
 
