@@ -70,7 +70,7 @@ function check_preconditions()
 
 function get_coverage()
 {
-  coverage run run_all_tests.py
+  coverage run --omit='*/__init__.py,*/test_*,run_all_tests.py' run_all_tests.py
   coverage report -m
 }
 
