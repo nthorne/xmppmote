@@ -44,6 +44,7 @@ class StableUpdater(Updater):
     downloaded. """ 
 
     def __init__(self, remote_url):
+        super(StableUpdater, self).__init__()
         self.__remote_url = remote_url
 
         has_new_version = False
@@ -108,3 +109,7 @@ class StableUpdater(Updater):
 
         return result
 
+    def get_update_version(self):
+        """ Get the version that the last update check yielded. """
+
+        return self.remote_version

@@ -118,3 +118,7 @@ class BleedingEdgeUpdater(Updater):
 
         return new_version
 
+    def get_update_version(self):
+        """ Get the version that the last update check yielded. """
+
+        return self.origin_head_sha

@@ -72,6 +72,9 @@ class UpdateNotifyer(object):
 
         if self.has_update and not had_update:
             cli = Client()
-            cli.change_status(u"software update available...")
+            
+            new_version = self.__updater.get_update_version()
+            if new_version:
+                cli.change_status(u"update available: %s" % new_version[:7])
 
         self.start()
