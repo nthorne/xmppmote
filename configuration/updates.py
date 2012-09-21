@@ -64,7 +64,7 @@ def construct_url_for_head_commit():
     """ Helper function for constructing the url for the master/HEAD commit. """
 
     result = os.path.join(REPO_URL, "commits")
-    result = os.path.join(REPO_URL, "HEAD")
+    result = os.path.join(result, "HEAD")
 
     return result
 
