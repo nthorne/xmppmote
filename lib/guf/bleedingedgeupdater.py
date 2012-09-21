@@ -34,6 +34,7 @@ import git
 import version
 import urllib2
 import json
+import logging
 
 class BleedingEdgeUpdater(Updater):
     """ BleedingEdgeUpdater queries github for current commit id, and if that
@@ -78,6 +79,8 @@ class BleedingEdgeUpdater(Updater):
 
         result = None
 
+        logger = logging.getLogger()
+
         try:
             response = urllib2.urlopen(self.__remote_url)
 
@@ -87,17 +90,18 @@ class BleedingEdgeUpdater(Updater):
 
             result = json_dict["sha"]
         # raised from urlopen
-        except urllib2.URLError:
-            pass
+        except urllib2.URLError, exc:
+            logger.info(u"Failed to connect to %s: %s" % (self.__remote_url,
+                                                          exc))
         # raised if urlopen returns None
         except AttributeError:
             pass
         # raised upon None or invalid json data
         except (TypeError, ValueError):
-            pass
+            logger.info(u"Invalid JSON returned from %s" % self.__remote_url)
         # raised if the sha key does not exists in the json dict
         except KeyError:
-            pass
+            logger.info(u"No sha key in JSON data.")
 
         return result
 
