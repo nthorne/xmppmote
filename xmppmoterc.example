@@ -34,10 +34,13 @@ interval: 60
 
 [updates]
 # In this section, you configure the software update service. If the action
-# option is set to notify, the update model detailed by the model option
-# (valid options are stable, or simply leave it unset - which compares the
-# version defined in version.py with the version defined in origin's version.py)
-# is used to query the remote repository for a new software version at the
-# configured interval (defaults to an hourly check if left unset).
+# option is set to notify, the update model detailed by the model option - valid
+# models are stable or bleeding, where stable model compares the version defined
+# in version.pu with the version defined in the version.py of the HEAD of
+# origin/master,and bleeding compares the local master HEAD SHA key with that of
+# the origin/master HEAD SHA key - will be used to check for software updates,
+# and indicate an update if one is found. The interval option details the
+# interval at which interval the version update check will be performed
+# (defaults to an hourly check if unset).
 action: notify
 model: stable
