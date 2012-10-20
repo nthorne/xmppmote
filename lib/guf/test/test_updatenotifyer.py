@@ -111,6 +111,7 @@ class UpdateNotifyerTest(mox.MoxTestBase):
 
         self.mox.StubOutWithMock(StableUpdater, "__init__")
         self.mox.StubOutWithMock(StableUpdater, "check")
+        self.mox.StubOutWithMock(StableUpdater, "get_update_version")
         self.mox.StubOutWithMock(threading, "Timer")
         self.mox.StubOutWithMock(threading.Thread, "start")
         self.mox.StubOutWithMock(Client, "change_status")
@@ -121,6 +122,7 @@ class UpdateNotifyerTest(mox.MoxTestBase):
         mock_timer.start()
 
         StableUpdater.check().AndReturn(True)
+        StableUpdater.get_update_version().AndReturn("1.0")
         Client.change_status(mox.IgnoreArg())
 
         threading.Timer(3600, mox.IgnoreArg()).AndReturn(mock_timer)
@@ -169,6 +171,7 @@ class UpdateNotifyerTest(mox.MoxTestBase):
 
         self.mox.StubOutWithMock(StableUpdater, "__init__")
         self.mox.StubOutWithMock(StableUpdater, "check")
+        self.mox.StubOutWithMock(StableUpdater, "get_update_version")
         self.mox.StubOutWithMock(threading, "Timer")
         self.mox.StubOutWithMock(threading.Thread, "start")
         self.mox.StubOutWithMock(Client, "change_status")
@@ -185,6 +188,7 @@ class UpdateNotifyerTest(mox.MoxTestBase):
         mock_timer.start()
 
         StableUpdater.check().AndReturn(True)
+        StableUpdater.get_update_version().AndReturn("1.0")
 
         threading.Timer(3600, mox.IgnoreArg()).AndReturn(mock_timer)
         mock_timer.start()
@@ -204,6 +208,7 @@ class UpdateNotifyerTest(mox.MoxTestBase):
 
         self.mox.StubOutWithMock(StableUpdater, "__init__")
         self.mox.StubOutWithMock(StableUpdater, "check")
+        self.mox.StubOutWithMock(StableUpdater, "get_update_version")
         self.mox.StubOutWithMock(threading, "Timer")
         self.mox.StubOutWithMock(threading.Thread, "start")
         self.mox.StubOutWithMock(Client, "change_status")
@@ -214,12 +219,14 @@ class UpdateNotifyerTest(mox.MoxTestBase):
         mock_timer.start()
 
         StableUpdater.check().AndReturn(True)
+        StableUpdater.get_update_version().AndReturn("1.0")
         Client.change_status(mox.IgnoreArg())
 
         threading.Timer(3600, mox.IgnoreArg()).AndReturn(mock_timer)
         mock_timer.start()
 
         StableUpdater.check().AndReturn(True)
+        StableUpdater.get_update_version().AndReturn("1.0")
 
         threading.Timer(3600, mox.IgnoreArg()).AndReturn(mock_timer)
         mock_timer.start()
