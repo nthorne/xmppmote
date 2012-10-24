@@ -65,7 +65,7 @@ class GetUpdateHandlerTest(mox.MoxTestBase):
         config.get("updates", "model").AndReturn(model)
         config.get("updates", "interval").AndReturn(interval)
 
-        StableUpdater.__init__(construct_url_for_version_file())
+        StableUpdater.__init__(REPO, construct_url_for_version_file())
 
         threading.Timer(int(interval), mox.IgnoreArg()).AndReturn(mock_timer)
         mock_timer.start()
@@ -78,7 +78,7 @@ class GetUpdateHandlerTest(mox.MoxTestBase):
         self.assertTrue(isinstance(update_handler, UpdateNotifyer))
 
     def test_notify_on_stable_no_interval(self):
-        """ Make sure that the default intervel is used for the StableUpdater,
+        """ Make sure that the default interval is used for the StableUpdater,
         if no default interval is given in the configuration. """
 
         mock_file = self.mox.CreateMockAnything()
@@ -99,7 +99,7 @@ class GetUpdateHandlerTest(mox.MoxTestBase):
         config.get("updates", "interval").AndRaise(NoOptionError("updates",
                                                                  "interval"))
 
-        StableUpdater.__init__(construct_url_for_version_file())
+        StableUpdater.__init__(REPO, construct_url_for_version_file())
 
         threading.Timer(DEFAULT_INTERVAL,
                         mox.IgnoreArg()).AndReturn(mock_timer)
@@ -133,7 +133,7 @@ class GetUpdateHandlerTest(mox.MoxTestBase):
         config.get("updates", "model").AndReturn(model)
         config.get("updates", "interval").AndReturn(interval)
 
-        BleedingEdgeUpdater.__init__(construct_url_for_head_commit())
+        BleedingEdgeUpdater.__init__(REPO, construct_url_for_head_commit())
 
         threading.Timer(int(interval), mox.IgnoreArg()).AndReturn(mock_timer)
         mock_timer.start()
@@ -167,7 +167,7 @@ class GetUpdateHandlerTest(mox.MoxTestBase):
         config.get("updates", "interval").AndRaise(NoOptionError("updates",
                                                                  "interval"))
 
-        BleedingEdgeUpdater.__init__(construct_url_for_head_commit())
+        BleedingEdgeUpdater.__init__(REPO, construct_url_for_head_commit())
 
         threading.Timer(DEFAULT_INTERVAL,
                         mox.IgnoreArg()).AndReturn(mock_timer)
@@ -284,7 +284,7 @@ class GetUpdateHandlerTest(mox.MoxTestBase):
         config.get("updates", "model").AndReturn(model)
         config.get("updates", "interval").AndReturn(interval)
 
-        StableUpdater.__init__(construct_url_for_version_file())
+        StableUpdater.__init__(REPO, construct_url_for_version_file())
 
         threading.Timer(DEFAULT_INTERVAL, mox.IgnoreArg()).AndReturn(mock_timer)
         mock_timer.start()

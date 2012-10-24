@@ -27,6 +27,9 @@ class Updater(object):
     """ Updater contains common methods used by the StableUpdater and
     BleedingEdgeUpdater. """
 
+    def __init__(self, repo):
+        self.__repo = repo
+
     # TODO: Drop this method (implemented for unit test purposes, until the
     # implementation is in place in the subtypes)
     def check(self):

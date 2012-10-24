@@ -42,8 +42,8 @@ class BleedingEdgeUpdater(Updater):
     attempts to update the installed version by pulling from github, if
     possible; otherwise a tarball of HEAD of origin/master is downloaded. """
 
-    def __init__(self, remote_url):
-        super(BleedingEdgeUpdater, self).__init__()
+    def __init__(self, repo, remote_url):
+        super(BleedingEdgeUpdater, self).__init__(repo)
 
         self.__remote_url = remote_url
         self.__project_root = os.path.dirname(

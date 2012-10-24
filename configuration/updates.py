@@ -33,7 +33,8 @@ from ConfigParser import NoSectionError
 from ConfigParser import NoOptionError
 
 
-REPO_URL =  "https://api.github.com/repos/nthorne/xmppmote"
+REPO = "nthorne/xmppmote"
+API_URL =  "https://api.github.com/repos/" + REPO
 VERSION_FILE = "version.py"
 DEFAULT_MODEL = "stable"
 DEFAULT_INTERVAL = 3600
@@ -55,7 +56,7 @@ class UnknownAction(Exception):
 def construct_url_for_version_file():
     """ Helper function for constructing the version file url for the repo. """
 
-    result = os.path.join(REPO_URL, "contents")
+    result = os.path.join(API_URL, "contents")
     result = os.path.join(result, VERSION_FILE)
 
     return result
@@ -63,7 +64,7 @@ def construct_url_for_version_file():
 def construct_url_for_head_commit():
     """ Helper function for constructing the url for the master/HEAD commit. """
 
-    result = os.path.join(REPO_URL, "commits")
+    result = os.path.join(API_URL, "commits")
     result = os.path.join(result, "HEAD")
 
     return result
@@ -76,15 +77,15 @@ def __parse_model(model):
     if not model or "stable" == model.lower():
         bleeding_edge = False
 
-        update_url = construct_url_for_version_file()
+        api_url = construct_url_for_version_file()
     elif "bleeding" == model.lower():
         bleeding_edge = True
 
-        update_url = construct_url_for_head_commit()
+        api_url = construct_url_for_head_commit()
     else:
         raise UnknownModel(model)
 
-    return (bleeding_edge, update_url)
+    return (bleeding_edge, api_url)
 
 
 def get_update_handler():
@@ -110,12 +111,12 @@ def get_update_handler():
     except (NoSectionError, NoOptionError):
         pass
 
-    (bleeding_edge, update_url) = __parse_model(model)
+    (bleeding_edge, api_url) = __parse_model(model)
 
     if not action:
         notifyer = None
     elif "notify" == action.lower():
-        notifyer = UpdateNotifyer(update_url, bleeding_edge, interval)
+        notifyer = UpdateNotifyer(REPO, api_url, bleeding_edge, interval)
     else:
         raise UnknownAction(action)
 

@@ -34,21 +34,19 @@ from bleedingedgeupdater import BleedingEdgeUpdater
 
 import threading
 
-import logging
-
 class UpdateNotifyer(object):
     """ UpdateNotifyer is responsible for querying the selected updater at the
     desired interval, and if an update is found, the bot status is updated to
     reflect this. """
 
-    def __init__(self, url, bleeding_edge = False, interval = 3600):
+    def __init__(self, repo, api_url, bleeding_edge = False, interval = 3600):
         self.has_update = False
         self.__timer = None
 
         if not bleeding_edge:
-            self.__updater = StableUpdater(url)
+            self.__updater = StableUpdater(repo, api_url)
         else:
-            self.__updater = BleedingEdgeUpdater(url)
+            self.__updater = BleedingEdgeUpdater(repo, api_url)
 
         self.__interval = interval
 
