@@ -32,6 +32,8 @@ from updater import Updater
 class UpdaterTest(mox.MoxTestBase):
     """ This type provides test cases for Updater. """ 
 
+    __repo = "foo/bar"
+
     def test_download_update(self):
         """ download_update should default to calling download_tarball. This
         allows for nifty override, e.g. pullin with Git by subtype. """
@@ -42,7 +44,7 @@ class UpdaterTest(mox.MoxTestBase):
         
         self.mox.ReplayAll()
 
-        updater = Updater()
+        updater = Updater(self.__repo)
         updater.download_update()
 
 #    def test_download_tarball(self):
