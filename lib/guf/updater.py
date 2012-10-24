@@ -30,9 +30,9 @@ class Updater(object):
     def __init__(self, repo):
         self.__repo = repo
 
-    # TODO: Drop this method (implemented for unit test purposes, until the
-    # implementation is in place in the subtypes)
-    def check(self):
-        """ Perform a version check. """
+    def download_update(self):
+        self.download_tarball()
 
+    def download_tarball(self):
         pass
+

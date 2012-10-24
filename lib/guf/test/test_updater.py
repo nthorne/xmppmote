@@ -27,11 +27,35 @@ sys.path.append(os.path.abspath(".."))
 import mox
 import unittest
 
-import updater
+from updater import Updater
 
 class UpdaterTest(mox.MoxTestBase):
     """ This type provides test cases for Updater. """ 
-    pass
+
+    def test_download_update(self):
+        """ download_update should default to calling download_tarball. This
+        allows for nifty override, e.g. pullin with Git by subtype. """
+
+        self.mox.StubOutWithMock(Updater, "download_tarball")
+
+        Updater.download_tarball()
+        
+        self.mox.ReplayAll()
+
+        updater = Updater()
+        updater.download_update()
+
+#    def test_download_tarball(self):
+#        """ download_tarball should download the tarball found at
+#        get_tarball_url, to get_target_directory """
+#
+#        self.mox.StubOutWithMock(Updater, "get_tarball_url")
+#
+#    def test_download_tarball_invalid_url(self):
+#        self.fail("Test case not implemented")
+#
+#    def test_download_tarball_download_fails(self):
+#        self.fail("Test case not implemented")
 
 
 if "__main__" == __name__:
