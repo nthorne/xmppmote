@@ -19,6 +19,8 @@
 
 """ This module tests the updater module. """
 
+import __builtin__
+
 import sys
 import os
 
@@ -65,7 +67,7 @@ class UpdaterTest(mox.MoxTestBase):
 
         self.mox.StubOutWithMock(Updater, "get_tarball_url")
         self.mox.StubOutWithMock(urllib2, "urlopen")
-        self.mox.StubOutWithMock(__builtins__, "open")
+        self.mox.StubOutWithMock(__builtin__, "open")
         self.mox.StubOutWithMock(os.path, "isdir")
 
         os.path.isdir(self.__update_dir).AndReturn(True)
@@ -76,7 +78,7 @@ class UpdaterTest(mox.MoxTestBase):
         mock_resource.info().AndReturn(mock_http_message)
         mock_http_message.get("Content-Disposition").AndReturn(self.__content_string)
 
-        __builtins__.open(self.__target_filename, "wb").AndReturn(mock_file)
+        __builtin__.open(self.__target_filename, "wb").AndReturn(mock_file)
         mock_file.__enter__().AndReturn(mock_file)
         mock_file.write(mock_resource.read().AndReturn(mock_contents))
         mock_file.__exit__(mox.IgnoreArg(), mox.IgnoreArg(), mox.IgnoreArg())
@@ -153,7 +155,7 @@ class UpdaterTest(mox.MoxTestBase):
 
         self.mox.StubOutWithMock(Updater, "get_tarball_url")
         self.mox.StubOutWithMock(urllib2, "urlopen")
-        self.mox.StubOutWithMock(__builtins__, "open")
+        self.mox.StubOutWithMock(__builtin__, "open")
         self.mox.StubOutWithMock(os.path, "isdir")
         self.mox.StubOutWithMock(os, "mkdir")
 
@@ -166,7 +168,7 @@ class UpdaterTest(mox.MoxTestBase):
         mock_resource.info().AndReturn(mock_http_message)
         mock_http_message.get("Content-Disposition").AndReturn(self.__content_string)
 
-        __builtins__.open(self.__target_filename, "wb").AndReturn(mock_file)
+        __builtin__.open(self.__target_filename, "wb").AndReturn(mock_file)
         mock_file.__enter__().AndReturn(mock_file)
         mock_file.write(mock_resource.read().AndReturn(mock_contents))
         mock_file.__exit__(mox.IgnoreArg(), mox.IgnoreArg(), mox.IgnoreArg())
@@ -187,7 +189,7 @@ class UpdaterTest(mox.MoxTestBase):
 
         self.mox.StubOutWithMock(Updater, "get_tarball_url")
         self.mox.StubOutWithMock(urllib2, "urlopen")
-        self.mox.StubOutWithMock(__builtins__, "open")
+        self.mox.StubOutWithMock(__builtin__, "open")
         self.mox.StubOutWithMock(os.path, "isdir")
 
         os.path.isdir(self.__update_dir).AndReturn(True)
@@ -199,7 +201,7 @@ class UpdaterTest(mox.MoxTestBase):
         mock_http_message.get("Content-Disposition").AndRaise(
             AttributeError("foobar"))
 
-        __builtins__.open("%s/%s.tar.gz" %
+        __builtin__.open("%s/%s.tar.gz" %
                           (self.__update_dir, self.__tarball_filename),
                           "wb").AndReturn(mock_file)
         mock_file.__enter__().AndReturn(mock_file)
