@@ -45,17 +45,26 @@ class Updater(object):
 
         logger = logging.getLogger()
 
+        if not os.path.isdir(self.__update_dir):
+            os.mkdir(self.__update_dir)
+
         try:
             url_object = urllib2.urlopen(tarball_url)
 
-            filename = url_object.info().get("Content-Disposition").split("filename=")[-1]
+            if url_object:
+                try:
+                    filename = url_object.info().get(
+                        "Content-Disposition").split("filename=")[-1]
+                except:
+                    filename = os.path.basename(tarball_url) + ".tar.gz"
 
-            local_filename = os.path.join(self.__update_dir, filename)
+                local_filename = os.path.join(self.__update_dir, filename)
 
-            logger.info(u"Downloading %s to %s" % (tarball_url, local_filename))
+                logger.info(u"Downloading %s to %s" %
+                            (tarball_url, local_filename))
 
-            with open(local_filename, "wb") as local_file:
-                local_file.write(url_object.read())
+                with open(local_filename, "wb") as local_file:
+                    local_file.write(url_object.read())
         except urllib2.HTTPError, error:
             logger.info(u"%d encountered when attempting to download %s" % 
                         (error.getcode(), tarball_url))

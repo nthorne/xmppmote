@@ -35,9 +35,9 @@ class UpdaterTest(mox.MoxTestBase):
     """ This type provides test cases for Updater. """ 
 
     __repo = "foo/bar"
-    __tarball_url = "the tarball url"
+    __tarball_filename = "random filename"
+    __tarball_url = "url/%s" % __tarball_filename
     __update_dir = "a local folder"
-    __tarball_filename = "a random filename"
     __content_string = "attachment; filename=%s" % __tarball_filename
     __target_filename = "%s/%s" % (__update_dir, __tarball_filename)
 
@@ -66,6 +66,9 @@ class UpdaterTest(mox.MoxTestBase):
         self.mox.StubOutWithMock(Updater, "get_tarball_url")
         self.mox.StubOutWithMock(urllib2, "urlopen")
         self.mox.StubOutWithMock(__builtins__, "open")
+        self.mox.StubOutWithMock(os.path, "isdir")
+
+        os.path.isdir(self.__update_dir).AndReturn(True)
 
         Updater.get_tarball_url(self.__repo).AndReturn(self.__tarball_url)
         urllib2.urlopen(self.__tarball_url).AndReturn(mock_resource)
@@ -89,6 +92,9 @@ class UpdaterTest(mox.MoxTestBase):
 
         self.mox.StubOutWithMock(Updater, "get_tarball_url")
         self.mox.StubOutWithMock(urllib2, "urlopen")
+        self.mox.StubOutWithMock(os.path, "isdir")
+
+        os.path.isdir(self.__update_dir).AndReturn(True)
 
         Updater.get_tarball_url(self.__repo).AndReturn(self.__tarball_url)
         urllib2.urlopen(self.__tarball_url).AndRaise(urllib2.URLError("Nah-ah"))
@@ -102,9 +108,11 @@ class UpdaterTest(mox.MoxTestBase):
         """ if urlopen returns None (i.e. no handler), None shall be returned
         from download_tarball. """
 
-
         self.mox.StubOutWithMock(Updater, "get_tarball_url")
         self.mox.StubOutWithMock(urllib2, "urlopen")
+        self.mox.StubOutWithMock(os.path, "isdir")
+
+        os.path.isdir(self.__update_dir).AndReturn(True)
 
         Updater.get_tarball_url(self.__repo).AndReturn(self.__tarball_url)
         urllib2.urlopen(self.__tarball_url).AndReturn(None)
@@ -120,6 +128,9 @@ class UpdaterTest(mox.MoxTestBase):
 
         self.mox.StubOutWithMock(Updater, "get_tarball_url")
         self.mox.StubOutWithMock(urllib2, "urlopen")
+        self.mox.StubOutWithMock(os.path, "isdir")
+
+        os.path.isdir(self.__update_dir).AndReturn(True)
 
         Updater.get_tarball_url(self.__repo).AndReturn(self.__tarball_url)
         urllib2.urlopen(self.__tarball_url).AndRaise(
@@ -131,14 +142,76 @@ class UpdaterTest(mox.MoxTestBase):
         updater = Updater(repo = self.__repo, update_dir = self.__update_dir)
         self.assertEquals(None, updater.download_tarball())
 
-    #def test_download_tarball_download_fails(self):
-        #self.fail("Test case not implemented")
+    def test_download_tarball_download_directory_does_not_exist(self):
+        """ if the folder in which the tarball is to be stored does not exist,
+        it should be created. """
 
-    #def test_download_tarball_download_directory_does_not_exist(self):
-        #self.fail("Test case not implemented")
+        mock_resource = self.mox.CreateMockAnything()
+        mock_file = self.mox.CreateMockAnything()
+        mock_http_message = self.mox.CreateMockAnything()
+        mock_contents = self.mox.CreateMockAnything()
 
-    #def test_download_filename_construction_raises(self):
-        #self.fail("Test case not implemented")
+        self.mox.StubOutWithMock(Updater, "get_tarball_url")
+        self.mox.StubOutWithMock(urllib2, "urlopen")
+        self.mox.StubOutWithMock(__builtins__, "open")
+        self.mox.StubOutWithMock(os.path, "isdir")
+        self.mox.StubOutWithMock(os, "mkdir")
+
+        os.path.isdir(self.__update_dir).AndReturn(False)
+        os.mkdir(self.__update_dir)
+
+        Updater.get_tarball_url(self.__repo).AndReturn(self.__tarball_url)
+        urllib2.urlopen(self.__tarball_url).AndReturn(mock_resource)
+
+        mock_resource.info().AndReturn(mock_http_message)
+        mock_http_message.get("Content-Disposition").AndReturn(self.__content_string)
+
+        __builtins__.open(self.__target_filename, "wb").AndReturn(mock_file)
+        mock_file.__enter__().AndReturn(mock_file)
+        mock_file.write(mock_resource.read().AndReturn(mock_contents))
+        mock_file.__exit__(mox.IgnoreArg(), mox.IgnoreArg(), mox.IgnoreArg())
+
+        self.mox.ReplayAll()
+
+        updater = Updater(repo = self.__repo, update_dir = self.__update_dir)
+        self.assertEquals(self.__target_filename, updater.download_tarball())
+
+    def test_download_filename_construction_raises(self):
+        """ download_tarball should download the tarball found at
+        get_tarball_url, to get_target_directory """
+
+        mock_resource = self.mox.CreateMockAnything()
+        mock_file = self.mox.CreateMockAnything()
+        mock_http_message = self.mox.CreateMockAnything()
+        mock_contents = self.mox.CreateMockAnything()
+
+        self.mox.StubOutWithMock(Updater, "get_tarball_url")
+        self.mox.StubOutWithMock(urllib2, "urlopen")
+        self.mox.StubOutWithMock(__builtins__, "open")
+        self.mox.StubOutWithMock(os.path, "isdir")
+
+        os.path.isdir(self.__update_dir).AndReturn(True)
+
+        Updater.get_tarball_url(self.__repo).AndReturn(self.__tarball_url)
+        urllib2.urlopen(self.__tarball_url).AndReturn(mock_resource)
+
+        mock_resource.info().AndReturn(mock_http_message)
+        mock_http_message.get("Content-Disposition").AndRaise(
+            AttributeError("foobar"))
+
+        __builtins__.open("%s/%s.tar.gz" %
+                          (self.__update_dir, self.__tarball_filename),
+                          "wb").AndReturn(mock_file)
+        mock_file.__enter__().AndReturn(mock_file)
+        mock_file.write(mock_resource.read().AndReturn(mock_contents))
+        mock_file.__exit__(mox.IgnoreArg(), mox.IgnoreArg(), mox.IgnoreArg())
+
+        self.mox.ReplayAll()
+
+        updater = Updater(repo = self.__repo, update_dir = self.__update_dir)
+        self.assertEquals("%s/%s.tar.gz" %
+            (self.__update_dir, self.__tarball_filename),
+                          updater.download_tarball())
 
 
 if "__main__" == __name__:
