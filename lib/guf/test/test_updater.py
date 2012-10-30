@@ -84,10 +84,52 @@ class UpdaterTest(mox.MoxTestBase):
         self.assertEquals(self.__target_filename, updater.download_tarball())
 
     def test_download_tarball_invalid_url(self):
-        """ if urlopen either raises URLError or returns None, None shall be
-        returned from download_tarball. """
+        """ if urlopen raises URLError, None shall be returned from
+        download_tarball. """
 
-        self.fail("Test case not implemented")
+        self.mox.StubOutWithMock(Updater, "get_tarball_url")
+        self.mox.StubOutWithMock(urllib2, "urlopen")
+
+        Updater.get_tarball_url(self.__repo).AndReturn(self.__tarball_url)
+        urllib2.urlopen(self.__tarball_url).AndRaise(urllib2.URLError("Nah-ah"))
+
+        self.mox.ReplayAll()
+
+        updater = Updater(repo = self.__repo, update_dir = self.__update_dir)
+        self.assertEquals(None, updater.download_tarball())
+
+    def test_download_tarball_no_handler(self):
+        """ if urlopen returns None (i.e. no handler), None shall be returned
+        from download_tarball. """
+
+
+        self.mox.StubOutWithMock(Updater, "get_tarball_url")
+        self.mox.StubOutWithMock(urllib2, "urlopen")
+
+        Updater.get_tarball_url(self.__repo).AndReturn(self.__tarball_url)
+        urllib2.urlopen(self.__tarball_url).AndReturn(None)
+
+        self.mox.ReplayAll()
+
+        updater = Updater(repo = self.__repo, update_dir = self.__update_dir)
+        self.assertEquals(None, updater.download_tarball())
+
+    def test_download_tarball_http_error(self):
+        """ if urlopen raises HTTPError, None shall be returned from
+        download_tarball. """
+
+        self.mox.StubOutWithMock(Updater, "get_tarball_url")
+        self.mox.StubOutWithMock(urllib2, "urlopen")
+
+        Updater.get_tarball_url(self.__repo).AndReturn(self.__tarball_url)
+        urllib2.urlopen(self.__tarball_url).AndRaise(
+            urllib2.HTTPError(self.__tarball_url, 404, "There is no url", None,
+                              None))
+
+        self.mox.ReplayAll()
+
+        updater = Updater(repo = self.__repo, update_dir = self.__update_dir)
+        self.assertEquals(None, updater.download_tarball())
 
     #def test_download_tarball_download_fails(self):
         #self.fail("Test case not implemented")

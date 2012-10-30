@@ -23,8 +23,9 @@ Updater is the supertype for the StableUpdater and BleedingEdgeUpdater, and
 provides common methods (e.g. extracting downloaded tarball, replacing
 software). """
 
-import urllib2
+import logging
 import os
+import urllib2
 
 class Updater(object):
     """ Updater contains common methods used by the StableUpdater and
@@ -40,14 +41,28 @@ class Updater(object):
     def download_tarball(self):
         tarball_url = self.get_tarball_url(self.__repo)
 
-        url_object = urllib2.urlopen(tarball_url)
+        local_filename = None
 
-        filename = url_object.info().get("Content-Disposition").split("filename=")[-1]
+        logger = logging.getLogger()
 
-        local_filename = os.path.join(self.__update_dir, filename)
+        try:
+            url_object = urllib2.urlopen(tarball_url)
 
-        with open(local_filename, "wb") as local_file:
-            local_file.write(url_object.read())
+            filename = url_object.info().get("Content-Disposition").split("filename=")[-1]
+
+            local_filename = os.path.join(self.__update_dir, filename)
+
+            logger.info(u"Downloading %s to %s" % (tarball_url, local_filename))
+
+            with open(local_filename, "wb") as local_file:
+                local_file.write(url_object.read())
+        except urllib2.HTTPError, error:
+            logger.info(u"%d encountered when attempting to download %s" % 
+                        (error.getcode(), tarball_url))
+        except urllib2.URLError:
+            logger.info(u"Failed to download %s" % tarball_url)
+        except AttributeError:
+            logger.info(u"Missing urlopen handler for %s" % tarball_url)
 
         return local_filename
 
