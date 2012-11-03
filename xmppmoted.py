@@ -37,6 +37,7 @@ import locale
 import logging
 import logging.handlers
 import sys
+import traceback
 
 
 class XMPPMoteDaemon(Daemon):
@@ -91,6 +92,9 @@ class XMPPMoteDaemon(Daemon):
             logger = logging.getLogger()
             logger.critical(u"encountered exception %s. terminating XMPPMote." %
                            repr(exc))
+
+            for line in filter(None, traceback.format_exc().split("\n")):
+                logger.critical(line)
 
         client.disconnect()
 
