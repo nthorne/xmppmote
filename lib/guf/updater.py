@@ -36,9 +36,14 @@ class Updater(object):
         self.__update_dir = update_dir
 
     def download_update(self):
+        """ Download an update using the prefered method (default is tarball
+        download). """
+
         self.download_tarball()
 
     def download_tarball(self):
+        """ Download a source tree tarball from github. """
+
         tarball_url = self.get_tarball_url(self.__repo)
 
         local_filename = None
@@ -76,5 +81,8 @@ class Updater(object):
         return local_filename
 
     def get_tarball_url(self, repo):
+        """ This method is to be overriden by subtypes, in order to fetch the
+        appropriate tarball. """
+
         raise Exception("Method not overridden")
 
