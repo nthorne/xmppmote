@@ -69,7 +69,8 @@ class ConfigurationParser(borg.make_borg()):
             result = wrapped_attr(*args)
 
             # if a modifying call was performed, save the parser state to disk
-            if 'set' == attrib or attrib.startswith('add_') or attrib.startswith('remove_'):
+            if 'set' == attrib or attrib.startswith('add_') \
+               or attrib.startswith('remove_'):
                 self.__save_state()
 
             return result
