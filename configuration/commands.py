@@ -85,7 +85,7 @@ def restricted_set():
         options = config.items("commands")
 
         result = map(__transform_set, 
-                     [tuple(value.split(':')) for (key, value) in options])
+                     [tuple(value.split(':')) for (_, value) in options])
 
     return result
     
