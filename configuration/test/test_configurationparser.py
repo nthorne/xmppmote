@@ -143,6 +143,30 @@ class ConfigurationParserTest(mox.MoxTestBase):
         config.parse(mock_file)
         config.add_section("credentials")
 
+    def test_removing_section(self):
+        """ Test removin a section - this should be a simple delegate to
+        SafeConfigParser.remove_section, with a write upon successful removal. """
+
+        mock_file = self.mox.CreateMockAnything()
+        mock_file.closed = False
+        mock_file.name = "foobar"
+
+        self.mox.StubOutWithMock(SafeConfigParser, "read")
+        self.mox.StubOutWithMock(SafeConfigParser, "remove_section")
+        self.mox.StubOutWithMock(SafeConfigParser, "write")
+
+        SafeConfigParser.read(mock_file.name)
+        SafeConfigParser.remove_section("credentials")
+        mock_file.truncate(0)
+        mock_file.flush()
+        SafeConfigParser.write(mock_file)
+
+        self.mox.ReplayAll()
+        
+        config = ConfigurationParser()
+        config.parse(mock_file)
+        config.remove_section("credentials")
+
 
 if "__main__" == __name__:
     unittest.main()
