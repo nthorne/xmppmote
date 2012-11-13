@@ -44,3 +44,7 @@ or, if you want branch coverage (will launch firefox after having generated
 coverage files):
 
     $ ./get_test_coverage.sh -b
+
+Linting all modules
+-------------------
+    $ ./lint_all_modules.sh
