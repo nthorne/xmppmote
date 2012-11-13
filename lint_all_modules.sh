@@ -26,6 +26,7 @@ IFS='
 readonly PYLINT=$(command -v pylint)
 readonly PYLINT_ARGS="--reports=n --output-format=parseable "
 LINT_TESTS=
+FILENAMES_ONLY=
 
 
 function usage()
@@ -37,8 +38,10 @@ Tiny wrapper script for linting all modules (non-unit test python files); only
 produces output for those modules that contains lint remarks.
 
 Where valid OPTIONS are:
-  -h, --help    display usage
-  -t, --tests   lint unit tests as well
+  -h, --help            display usage
+  -t, --tests           lint unit tests as well
+  -f, --filenames-only  only output filenames - useful for eg.
+                        vim \$($(basename $0) -f)
 
 Usage_Heredoc
 }
@@ -66,6 +69,14 @@ function parse_options()
           error "duplicate tests flag"
         fi
         ;;
+      -f|--filenames-only)
+        if [[ -z $FILENAMES_ONLY ]]
+        then
+          FILENAMES_ONLY=1
+        else
+          error "duplicate filenames-only flag"
+        fi
+        ;;
       *)
         error "Unknown option: $1. Try $(basename $0) -h for options."
         ;;
@@ -85,6 +96,7 @@ function lint_modules()
   local FILE
   local FILE_MATCH_PATTERN='-name "*.py" ! -name "__init__.py"'
   local RESPONSE
+  local OUTPUT
 
   if [[ -z $LINT_TESTS ]]
   then
@@ -98,11 +110,21 @@ function lint_modules()
     RESPONSE=`$PYLINT $PYLINT_ARGS $FILE 2>/dev/null`
     if [[ ! -z $RESPONSE ]]
     then
-      echo $FILE
-      echo "$RESPONSE"
-      echo
+      if [[ ! -z $FILENAMES_ONLY ]]
+      then
+        OUTPUT="$OUTPUT $FILE"
+      else
+        echo $FILE
+        echo "$RESPONSE"
+        echo
+      fi
     fi
   done
+
+  if [[ ! -z $OUTPUT ]]
+  then
+    echo $OUTPUT
+  fi
 }
 
 
