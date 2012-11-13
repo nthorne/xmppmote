@@ -17,7 +17,7 @@ usage
 -----
 
 First off, you will need to create a XMPP user ( **use a unique password since the password**
-**currently is stored in plain text**) on e.g. the Jabber network (http://www.jabber.org/create-an-account/),
+**currently is stored in plain text** ) on e.g. the Jabber network (http://www.jabber.org/create-an-account/),
 and then initialise a chat session between that user, and the user that you wish to control
 your box with; and since that session initialisation is not yet implemented in XMPPMote,
 just go ahead and use a web based jabber client such as JWChat (http://jwchat.org/).
