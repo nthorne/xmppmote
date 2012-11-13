@@ -60,7 +60,7 @@ class Updater(object):
                 try:
                     filename = url_object.info().get(
                         "Content-Disposition").split("filename=")[-1]
-                except:
+                except Exception:
                     filename = os.path.basename(tarball_url) + ".tar.gz"
 
                 local_filename = os.path.join(self.__update_dir, filename)
