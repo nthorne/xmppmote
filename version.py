@@ -15,4 +15,8 @@
 #You should have received a copy of the GNU General Public License
 #along with XMPPMote.  If not, see <http://www.gnu.org/licenses/>.
 
+""" This module defines the software version.
+
+The version number is used when checking for software updates. """
+
 version = '0.2'
