@@ -39,14 +39,14 @@ class UpdateNotifyer(object):
     desired interval, and if an update is found, the bot status is updated to
     reflect this. """
 
-    def __init__(self, repo, api_url, bleeding_edge = False, interval = 3600):
+    def __init__(self, repo, bleeding_edge = False, interval = 3600):
         self.has_update = False
         self.__timer = None
 
         if not bleeding_edge:
-            self.__updater = StableUpdater(repo, api_url)
+            self.__updater = StableUpdater(repo)
         else:
-            self.__updater = BleedingEdgeUpdater(repo, api_url)
+            self.__updater = BleedingEdgeUpdater(repo)
 
         self.__interval = interval
 

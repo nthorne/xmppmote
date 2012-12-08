@@ -40,7 +40,7 @@ class BleedingEdgeUpdaterTest(mox.MoxTestBase):
     __project_root = os.path.dirname(
         os.path.abspath(version.__file__))
     __repo = "foo/bar"
-    __remote_url = "there is no remote"
+    __remote_url = "https://api.github.com/repos/foo/bar/commits/HEAD"
     __mock_local_head_hash = "local"
     __mock_origin_head_sha = "origin"
 
@@ -58,7 +58,7 @@ class BleedingEdgeUpdaterTest(mox.MoxTestBase):
 
         self.mox.ReplayAll()
 
-        updater = BleedingEdgeUpdater(self.__repo, self.__remote_url)
+        updater = BleedingEdgeUpdater(self.__repo)
         self.assertTrue(updater.is_repo())
 
     def test_is_repo_when_isnt_repo(self):
@@ -76,7 +76,7 @@ class BleedingEdgeUpdaterTest(mox.MoxTestBase):
 
         self.mox.ReplayAll()
 
-        updater = BleedingEdgeUpdater(self.__repo, self.__remote_url)
+        updater = BleedingEdgeUpdater(self.__repo)
         self.assertTrue(not updater.is_repo())
 
     def test_has_git_when_has_git(self):
@@ -91,7 +91,7 @@ class BleedingEdgeUpdaterTest(mox.MoxTestBase):
 
         self.mox.ReplayAll()
 
-        updater = BleedingEdgeUpdater(self.__repo, self.__remote_url)
+        updater = BleedingEdgeUpdater(self.__repo)
         self.assertTrue(updater.has_git())
 
     def test_has_git_when_does_not_have_git(self):
@@ -107,7 +107,7 @@ class BleedingEdgeUpdaterTest(mox.MoxTestBase):
 
         self.mox.ReplayAll()
 
-        updater = BleedingEdgeUpdater(self.__repo, self.__remote_url)
+        updater = BleedingEdgeUpdater(self.__repo)
         self.assertTrue(not updater.has_git())
 
     def test_has_git_when_is_not_repo(self):
@@ -122,7 +122,7 @@ class BleedingEdgeUpdaterTest(mox.MoxTestBase):
 
         self.mox.ReplayAll()
 
-        updater = BleedingEdgeUpdater(self.__repo, self.__remote_url)
+        updater = BleedingEdgeUpdater(self.__repo)
         self.assertTrue(not updater.has_git())
 
     def test_getting_local_commit_hash(self):
@@ -143,7 +143,7 @@ class BleedingEdgeUpdaterTest(mox.MoxTestBase):
 
         self.mox.ReplayAll()
 
-        updater = BleedingEdgeUpdater(self.__repo, self.__remote_url)
+        updater = BleedingEdgeUpdater(self.__repo)
         self.assertEquals(self.__mock_local_head_hash,
                           updater.local_head_commit_hash)
 
@@ -161,7 +161,7 @@ class BleedingEdgeUpdaterTest(mox.MoxTestBase):
 
         self.mox.ReplayAll()
 
-        updater = BleedingEdgeUpdater(self.__repo, self.__remote_url)
+        updater = BleedingEdgeUpdater(self.__repo)
         self.assertEqual(None, updater.local_head_commit_hash)
 
     def test_getting_local_commit_hash_no_git(self):
@@ -180,7 +180,7 @@ class BleedingEdgeUpdaterTest(mox.MoxTestBase):
 
         self.mox.ReplayAll()
 
-        updater = BleedingEdgeUpdater(self.__repo, self.__remote_url)
+        updater = BleedingEdgeUpdater(self.__repo)
         self.assertEqual(None, updater.local_head_commit_hash)
 
     def test_getting_origin_head_hash(self):
@@ -202,7 +202,7 @@ class BleedingEdgeUpdaterTest(mox.MoxTestBase):
 
         self.mox.ReplayAll()
 
-        bleeding_updater = BleedingEdgeUpdater(self.__repo, self.__remote_url)
+        bleeding_updater = BleedingEdgeUpdater(self.__repo)
 
         self.assertEquals(self.__mock_origin_head_sha,
                           bleeding_updater.get_origin_head_sha())
@@ -218,7 +218,7 @@ class BleedingEdgeUpdaterTest(mox.MoxTestBase):
 
         self.mox.ReplayAll()
 
-        bleeding_updater = BleedingEdgeUpdater(self.__repo, self.__remote_url)
+        bleeding_updater = BleedingEdgeUpdater(self.__repo)
 
         self.assertEquals(None, bleeding_updater.get_origin_head_sha())
 
@@ -232,7 +232,7 @@ class BleedingEdgeUpdaterTest(mox.MoxTestBase):
 
         self.mox.ReplayAll()
 
-        bleeding_updater = BleedingEdgeUpdater(self.__repo, self.__remote_url)
+        bleeding_updater = BleedingEdgeUpdater(self.__repo)
 
         self.assertEquals(None, bleeding_updater.get_origin_head_sha())
 
@@ -249,7 +249,7 @@ class BleedingEdgeUpdaterTest(mox.MoxTestBase):
 
         self.mox.ReplayAll()
 
-        bleeding_updater = BleedingEdgeUpdater(self.__repo, self.__remote_url)
+        bleeding_updater = BleedingEdgeUpdater(self.__repo)
 
         self.assertEquals(None, bleeding_updater.get_origin_head_sha())
 
@@ -268,7 +268,7 @@ class BleedingEdgeUpdaterTest(mox.MoxTestBase):
 
         self.mox.ReplayAll()
 
-        bleeding_updater = BleedingEdgeUpdater(self.__repo, self.__remote_url)
+        bleeding_updater = BleedingEdgeUpdater(self.__repo)
 
         self.assertEquals(None, bleeding_updater.get_origin_head_sha())
 
@@ -291,7 +291,7 @@ class BleedingEdgeUpdaterTest(mox.MoxTestBase):
 
         self.mox.ReplayAll()
 
-        bleeding_updater = BleedingEdgeUpdater(self.__repo, self.__remote_url)
+        bleeding_updater = BleedingEdgeUpdater(self.__repo)
 
         self.assertEquals(None, bleeding_updater.get_origin_head_sha())
 
@@ -317,7 +317,7 @@ class BleedingEdgeUpdaterTest(mox.MoxTestBase):
 
         self.mox.ReplayAll()
 
-        updater = BleedingEdgeUpdater(self.__repo, self.__remote_url)
+        updater = BleedingEdgeUpdater(self.__repo)
 
         self.assertTrue(updater.check())
 
@@ -343,7 +343,7 @@ class BleedingEdgeUpdaterTest(mox.MoxTestBase):
 
         self.mox.ReplayAll()
 
-        updater = BleedingEdgeUpdater(self.__repo, self.__remote_url)
+        updater = BleedingEdgeUpdater(self.__repo)
 
         self.assertTrue(not updater.check())
 

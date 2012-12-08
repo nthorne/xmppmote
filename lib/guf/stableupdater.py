@@ -43,9 +43,13 @@ class StableUpdater(Updater):
     version defined in version.version, a tarball for the newer tag is
     downloaded. """ 
 
-    def __init__(self, repo, remote_url):
+    def __init__(self, repo):
         super(StableUpdater, self).__init__(repo)
-        self.__remote_url = remote_url
+        self.__remote_url = os.path.join(
+            os.path.join(
+                os.path.join('https://api.github.com/repos', repo),
+                'contents'),
+            'version.py')
 
         has_new_version = False
         self.remote_version = None
