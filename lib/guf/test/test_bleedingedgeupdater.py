@@ -41,6 +41,7 @@ class BleedingEdgeUpdaterTest(mox.MoxTestBase):
         os.path.abspath(version.__file__))
     __repo = "foo/bar"
     __remote_url = "https://api.github.com/repos/foo/bar/commits/HEAD"
+    __tarball_url = "https://github.com/foo/bar/tarball/master"
     __mock_local_head_hash = "local"
     __mock_origin_head_sha = "origin"
 
@@ -346,6 +347,90 @@ class BleedingEdgeUpdaterTest(mox.MoxTestBase):
         updater = BleedingEdgeUpdater(self.__repo)
 
         self.assertTrue(not updater.check())
+
+    def test_download_update_when_has_git_and_is_repo(self):
+        """ If the project root is a git repo, and git is available, changes
+        shall be fetched from github. """
+
+        self.mox.StubOutWithMock(BleedingEdgeUpdater, "is_repo")
+        self.mox.StubOutWithMock(BleedingEdgeUpdater, "has_git")
+        self.mox.StubOutWithMock(BleedingEdgeUpdater, "fetch_from_origin")
+        self.mox.StubOutWithMock(git.LocalRepository, "fetch")
+
+        BleedingEdgeUpdater.is_repo().AndReturn(True)
+        BleedingEdgeUpdater.has_git().AndReturn(True)
+
+        BleedingEdgeUpdater.is_repo().AndReturn(True)
+        BleedingEdgeUpdater.has_git().AndReturn(True)
+
+        BleedingEdgeUpdater.fetch_from_origin()
+
+        self.mox.ReplayAll()
+
+        updater = BleedingEdgeUpdater(self.__repo)
+        updater.download_update()
+
+    def test_download_update_when_no_git(self):
+        """ If git is not available, there should be no attempt to fetch from
+        origin, but rather a source tarball should be downloaded. """
+
+        self.mox.StubOutWithMock(BleedingEdgeUpdater, "is_repo")
+        self.mox.StubOutWithMock(BleedingEdgeUpdater, "has_git")
+        self.mox.StubOutWithMock(BleedingEdgeUpdater, "fetch_from_origin")
+        self.mox.StubOutWithMock(BleedingEdgeUpdater, "download_tarball")
+        self.mox.StubOutWithMock(git.LocalRepository, "fetch")
+
+        BleedingEdgeUpdater.is_repo().AndReturn(True)
+        BleedingEdgeUpdater.has_git().AndReturn(True)
+
+        BleedingEdgeUpdater.is_repo().AndReturn(True)
+        BleedingEdgeUpdater.has_git().AndReturn(False)
+
+        BleedingEdgeUpdater.download_tarball()
+
+        self.mox.ReplayAll()
+
+        updater = BleedingEdgeUpdater(self.__repo)
+        updater.download_update()
+
+    def test_download_update_when_no_repo(self):
+        """ If project root is not a repo, there should be no attempt to fetch
+        from origin, but rather a source tarball should be downloaded. """
+
+        self.mox.StubOutWithMock(BleedingEdgeUpdater, "is_repo")
+        self.mox.StubOutWithMock(BleedingEdgeUpdater, "has_git")
+        self.mox.StubOutWithMock(BleedingEdgeUpdater, "fetch_from_origin")
+        self.mox.StubOutWithMock(BleedingEdgeUpdater, "download_tarball")
+        self.mox.StubOutWithMock(git.LocalRepository, "fetch")
+
+        BleedingEdgeUpdater.is_repo().AndReturn(True)
+        BleedingEdgeUpdater.has_git().AndReturn(True)
+
+        BleedingEdgeUpdater.is_repo().AndReturn(False)
+
+        BleedingEdgeUpdater.download_tarball()
+
+        self.mox.ReplayAll()
+
+        updater = BleedingEdgeUpdater(self.__repo)
+        updater.download_update()
+
+    def test_getting_tarball_url(self):
+        """ Make sure that the get_tarball url method is overloaded and returns
+        a sane URL. """
+
+        self.mox.ReplayAll()
+
+        updater = BleedingEdgeUpdater(self.__repo)
+
+        self.assertEquals(self.__tarball_url,
+                          updater.get_tarball_url(self.__repo))
+
+    def test_fetching_from_github_succeeds(self):
+        self.fail("Test case not implemented")
+
+    def test_fetching_from_github_fails(self):
+        self.fail("Test case not implemented")
 
 
 if "__main__" == __name__:

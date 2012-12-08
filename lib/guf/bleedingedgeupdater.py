@@ -126,3 +126,22 @@ class BleedingEdgeUpdater(Updater):
         """ Get the version that the last update check yielded. """
 
         return self.origin_head_sha
+
+    def download_update(self):
+        """ Download source code update. """
+
+        if self.is_repo() and self.has_git():
+            self.fetch_from_origin()
+        else:
+            self.download_tarball()
+
+    def fetch_from_origin(self):
+        """ Fetch software update from origin. """
+
+        raise Exception("Not implemented")
+
+    def get_tarball_url(self, repo):
+
+        return os.path.join(
+            os.path.join("https://github.com", repo),
+            "tarball/master")
