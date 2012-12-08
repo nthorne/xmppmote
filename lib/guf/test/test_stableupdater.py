@@ -41,7 +41,7 @@ class StableUpdaterTest(mox.MoxTestBase):
     """ This type provides test cases for StableUpdater. """
 
     __repo = "foo/bar"
-    __remote_url = "there is no url"
+    __remote_url = "https://api.github.com/repos/foo/bar/contents/version.py"
     __mocked_remote_version = "1.3.3.7"
     __mock_file_with_proper_version = """
 # This is a properly formed version file.
@@ -87,7 +87,7 @@ version =
 
         self.mox.ReplayAll()
 
-        stable_updater = StableUpdater(self.__repo, self.__remote_url)
+        stable_updater = StableUpdater(self.__repo)
 
         self.assertTrue(stable_updater.check())
         self.assertEquals(self.__mocked_remote_version,
@@ -118,7 +118,7 @@ version =
 
         self.mox.ReplayAll()
 
-        stable_updater = StableUpdater(self.__repo, self.__remote_url)
+        stable_updater = StableUpdater(self.__repo)
 
         self.assertTrue(not stable_updater.check())
         self.assertEquals(version.version,
@@ -136,7 +136,7 @@ version =
 
         self.mox.ReplayAll()
 
-        stable_updater = StableUpdater(self.__repo, self.__remote_url)
+        stable_updater = StableUpdater(self.__repo)
 
         self.assertTrue(not stable_updater.check())
         self.assertEquals(None, stable_updater.remote_version)
@@ -160,7 +160,7 @@ version =
 
         self.mox.ReplayAll()
 
-        stable_updater = StableUpdater(self.__repo, self.__remote_url)
+        stable_updater = StableUpdater(self.__repo)
 
         self.assertTrue(not stable_updater.check())
         self.assertEquals(None, stable_updater.remote_version)
@@ -190,7 +190,7 @@ version =
 
         self.mox.ReplayAll()
 
-        stable_updater = StableUpdater(self.__repo, self.__remote_url)
+        stable_updater = StableUpdater(self.__repo)
 
         self.assertTrue(not stable_updater.check())
 
@@ -219,7 +219,7 @@ version =
 
         self.mox.ReplayAll()
 
-        stable_updater = StableUpdater(self.__repo, self.__remote_url)
+        stable_updater = StableUpdater(self.__repo)
 
         self.assertTrue(not stable_updater.check())
         self.assertEquals(None, stable_updater.remote_version)
@@ -249,7 +249,7 @@ version =
 
         self.mox.ReplayAll()
 
-        stable_updater = StableUpdater(self.__repo, self.__remote_url)
+        stable_updater = StableUpdater(self.__repo)
 
         self.assertTrue(not stable_updater.check())
         self.assertEquals(None, stable_updater.remote_version)
@@ -270,7 +270,7 @@ version =
 
         self.mox.ReplayAll()
 
-        stable_updater = StableUpdater(self.__repo, self.__remote_url)
+        stable_updater = StableUpdater(self.__repo)
 
         self.assertTrue(not stable_updater.check())
         self.assertEquals(None, stable_updater.remote_version)
@@ -299,7 +299,7 @@ version =
 
         self.mox.ReplayAll()
 
-        stable_updater = StableUpdater(self.__repo, self.__remote_url)
+        stable_updater = StableUpdater(self.__repo)
 
         self.assertTrue(not stable_updater.check())
         self.assertEquals(None, stable_updater.remote_version)
@@ -316,7 +316,7 @@ version =
 
         self.mox.ReplayAll()
 
-        stable_updater = StableUpdater(self.__repo, self.__remote_url)
+        stable_updater = StableUpdater(self.__repo)
 
         self.assertTrue(not stable_updater.check())
         self.assertEquals(None, stable_updater.remote_version)
@@ -346,7 +346,7 @@ version =
 
         self.mox.ReplayAll()
 
-        stable_updater = StableUpdater(self.__repo, self.__remote_url)
+        stable_updater = StableUpdater(self.__repo)
 
         self.assertTrue(not stable_updater.check())
         self.assertEquals(None, stable_updater.remote_version)
@@ -378,7 +378,7 @@ version =
 
         self.mox.ReplayAll()
 
-        stable_updater = StableUpdater(self.__repo, self.__remote_url)
+        stable_updater = StableUpdater(self.__repo)
 
         self.assertTrue(stable_updater.check())
         self.assertEquals(self.__mocked_remote_version,
@@ -412,7 +412,7 @@ version =
 
         self.mox.ReplayAll()
 
-        stable_updater = StableUpdater(self.__repo, self.__remote_url)
+        stable_updater = StableUpdater(self.__repo)
 
         self.assertTrue(not stable_updater.check())
         self.assertEquals(self.__mocked_remote_version,

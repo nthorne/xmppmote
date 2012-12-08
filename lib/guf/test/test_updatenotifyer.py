@@ -46,22 +46,22 @@ class UpdateNotifyerTest(mox.MoxTestBase):
 
         self.mox.StubOutWithMock(StableUpdater, "__init__")
 
-        StableUpdater.__init__(self.__repo, self.__remote_url)
+        StableUpdater.__init__(self.__repo)
 
         self.mox.ReplayAll()
 
-        notifyer = UpdateNotifyer(self.__repo, self.__remote_url)
+        notifyer = UpdateNotifyer(self.__repo)
 
     def test_init_bleeding_egde_update(self):
         """ Make sure that the BleedingEdgeUpdater is used, if detailed. """
 
         self.mox.StubOutWithMock(BleedingEdgeUpdater, "__init__")
 
-        BleedingEdgeUpdater.__init__(self.__repo, self.__remote_url)
+        BleedingEdgeUpdater.__init__(self.__repo)
 
         self.mox.ReplayAll()
 
-        notifyer = UpdateNotifyer(self.__repo, self.__remote_url, True)
+        notifyer = UpdateNotifyer(self.__repo, True)
 
     def test_start(self):
         """ Make sure that a timer for the proper interval is started when the
@@ -72,14 +72,14 @@ class UpdateNotifyerTest(mox.MoxTestBase):
         self.mox.StubOutWithMock(StableUpdater, "__init__")
         self.mox.StubOutWithMock(threading, "Timer")
 
-        StableUpdater.__init__(self.__repo, self.__remote_url)
+        StableUpdater.__init__(self.__repo)
 
         threading.Timer(3600, mox.IgnoreArg()).AndReturn(mock_timer)
         mock_timer.start()
 
         self.mox.ReplayAll()
 
-        notifyer = UpdateNotifyer(self.__repo, self.__remote_url)
+        notifyer = UpdateNotifyer(self.__repo)
         notifyer.start()
 
     def test_stop(self):
@@ -91,7 +91,7 @@ class UpdateNotifyerTest(mox.MoxTestBase):
         self.mox.StubOutWithMock(StableUpdater, "__init__")
         self.mox.StubOutWithMock(threading, "Timer")
 
-        StableUpdater.__init__(self.__repo, self.__remote_url)
+        StableUpdater.__init__(self.__repo)
 
         threading.Timer(3600, mox.IgnoreArg()).AndReturn(mock_timer)
         mock_timer.start()
@@ -100,7 +100,7 @@ class UpdateNotifyerTest(mox.MoxTestBase):
 
         self.mox.ReplayAll()
 
-        notifyer = UpdateNotifyer(self.__repo, self.__remote_url)
+        notifyer = UpdateNotifyer(self.__repo)
         notifyer.start()
         notifyer.stop()
 
@@ -117,7 +117,7 @@ class UpdateNotifyerTest(mox.MoxTestBase):
         self.mox.StubOutWithMock(threading.Thread, "start")
         self.mox.StubOutWithMock(Client, "change_status")
 
-        StableUpdater.__init__(self.__repo, self.__remote_url)
+        StableUpdater.__init__(self.__repo)
 
         threading.Timer(3600, mox.IgnoreArg()).AndReturn(mock_timer)
         mock_timer.start()
@@ -131,7 +131,7 @@ class UpdateNotifyerTest(mox.MoxTestBase):
 
         self.mox.ReplayAll()
 
-        notifyer = UpdateNotifyer(self.__repo, self.__remote_url)
+        notifyer = UpdateNotifyer(self.__repo)
         notifyer.start()
         notifyer.timeout()
 
@@ -147,7 +147,7 @@ class UpdateNotifyerTest(mox.MoxTestBase):
         self.mox.StubOutWithMock(threading.Thread, "start")
         self.mox.StubOutWithMock(Client, "change_status")
 
-        StableUpdater.__init__(self.__repo, self.__remote_url)
+        StableUpdater.__init__(self.__repo)
 
         threading.Timer(3600, mox.IgnoreArg()).AndReturn(mock_timer)
         mock_timer.start()
@@ -159,7 +159,7 @@ class UpdateNotifyerTest(mox.MoxTestBase):
 
         self.mox.ReplayAll()
 
-        notifyer = UpdateNotifyer(self.__repo, self.__remote_url)
+        notifyer = UpdateNotifyer(self.__repo)
         notifyer.start()
         notifyer.timeout()
 
@@ -177,7 +177,7 @@ class UpdateNotifyerTest(mox.MoxTestBase):
         self.mox.StubOutWithMock(threading.Thread, "start")
         self.mox.StubOutWithMock(Client, "change_status")
 
-        StableUpdater.__init__(self.__repo, self.__remote_url)
+        StableUpdater.__init__(self.__repo)
 
         threading.Timer(3600, mox.IgnoreArg()).AndReturn(mock_timer)
         mock_timer.start()
@@ -196,7 +196,7 @@ class UpdateNotifyerTest(mox.MoxTestBase):
 
         self.mox.ReplayAll()
 
-        notifyer = UpdateNotifyer(self.__repo, self.__remote_url)
+        notifyer = UpdateNotifyer(self.__repo)
         notifyer.start()
         notifyer.timeout()
         notifyer.timeout()
@@ -214,7 +214,7 @@ class UpdateNotifyerTest(mox.MoxTestBase):
         self.mox.StubOutWithMock(threading.Thread, "start")
         self.mox.StubOutWithMock(Client, "change_status")
 
-        StableUpdater.__init__(self.__repo, self.__remote_url)
+        StableUpdater.__init__(self.__repo)
 
         threading.Timer(3600, mox.IgnoreArg()).AndReturn(mock_timer)
         mock_timer.start()
@@ -245,7 +245,7 @@ class UpdateNotifyerTest(mox.MoxTestBase):
 
         self.mox.ReplayAll()
 
-        notifyer = UpdateNotifyer(self.__repo, self.__remote_url)
+        notifyer = UpdateNotifyer(self.__repo)
         notifyer.start()
         notifyer.timeout()
         notifyer.timeout()
