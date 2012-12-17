@@ -9,3 +9,6 @@ xmppmoterc
 
 .coverage
 htmlcov
+
+# ignore rope project folder
+.ropeproject
