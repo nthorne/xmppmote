@@ -32,6 +32,7 @@ import version
 import git
 import urllib2
 import json
+import git.exceptions
 
 
 class BleedingEdgeUpdaterTest(mox.MoxTestBase):
@@ -44,7 +45,6 @@ class BleedingEdgeUpdaterTest(mox.MoxTestBase):
     __tarball_url = "https://github.com/foo/bar/tarball/master"
     __mock_local_head_hash = "local"
     __mock_origin_head_sha = "origin"
-
 
     def test_is_repo_when_is_repo(self):
         """ If project root contains a .git directory, make sure that is_repo
@@ -168,7 +168,7 @@ class BleedingEdgeUpdaterTest(mox.MoxTestBase):
     def test_getting_local_commit_hash_no_git(self):
         """ If git is not available, local_head_commit_hash attribute should
         equal None. """
-        
+
         mock_commit = self.mox.CreateMockAnything()
         mock_commit.hash = self.__mock_local_head_hash
 
@@ -427,10 +427,44 @@ class BleedingEdgeUpdaterTest(mox.MoxTestBase):
                           updater.get_tarball_url(self.__repo))
 
     def test_fetching_from_github_succeeds(self):
-        self.fail("Test case not implemented")
+        """ If fetching from github succeeds, fetch_from_origin should return
+        True. fetch_from_origin can safely assume that git is installed and that
+        the tree is a repo. """
+
+        self.mox.StubOutWithMock(BleedingEdgeUpdater, "is_repo")
+        self.mox.StubOutWithMock(BleedingEdgeUpdater, "has_git")
+        self.mox.StubOutWithMock(git.LocalRepository, "fetch")
+
+        BleedingEdgeUpdater.is_repo().AndReturn(True)
+        BleedingEdgeUpdater.has_git().AndReturn(True)
+
+        git.LocalRepository.fetch()
+
+        self.mox.ReplayAll()
+
+        self.assertTrue(BleedingEdgeUpdater(self.__repo).fetch_from_origin())
 
     def test_fetching_from_github_fails(self):
-        self.fail("Test case not implemented")
+        """ If fetching from github fails (an assertion is raised),
+        fetch_from_origin should return false. """
+
+        self.mox.StubOutWithMock(BleedingEdgeUpdater, "is_repo")
+        self.mox.StubOutWithMock(BleedingEdgeUpdater, "has_git")
+        self.mox.StubOutWithMock(git.LocalRepository, "fetch")
+
+        BleedingEdgeUpdater.is_repo().AndReturn(True)
+        BleedingEdgeUpdater.has_git().AndReturn(True)
+
+        git.LocalRepository.fetch().AndRaise(AssertionError)
+
+        git.LocalRepository.fetch().AndRaise(git.exceptions.GitException("foo"))
+
+        self.mox.ReplayAll()
+
+        updater = BleedingEdgeUpdater(self.__repo)
+
+        self.assertFalse(updater.fetch_from_origin())
+        self.assertFalse(updater.fetch_from_origin())
 
 
 if "__main__" == __name__:

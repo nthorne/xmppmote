@@ -31,10 +31,12 @@ sys.path.append(os.path.abspath("../../.."))
 from updater import Updater
 
 import git
+import git.exceptions
 import version
 import urllib2
 import json
 import logging
+
 
 class BleedingEdgeUpdater(Updater):
     """ BleedingEdgeUpdater queries github for current commit id, and if that
@@ -138,7 +140,12 @@ class BleedingEdgeUpdater(Updater):
     def fetch_from_origin(self):
         """ Fetch software update from origin. """
 
-        raise Exception("Not implemented")
+        try:
+            self.repo.fetch()
+        except (AssertionError, git.exceptions.GitException):
+            return False
+
+        return True
 
     def get_tarball_url(self, repo):
 
