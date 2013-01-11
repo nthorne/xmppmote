@@ -348,13 +348,14 @@ class BleedingEdgeUpdaterTest(mox.MoxTestBase):
 
         self.assertTrue(not updater.check())
 
-    def test_download_update_when_has_git_and_is_repo(self):
+    def test_download_update_when_has_git_and_is_repo_fetch_succeeds(self):
         """ If the project root is a git repo, and git is available, changes
         shall be fetched from github. """
 
         self.mox.StubOutWithMock(BleedingEdgeUpdater, "is_repo")
         self.mox.StubOutWithMock(BleedingEdgeUpdater, "has_git")
         self.mox.StubOutWithMock(BleedingEdgeUpdater, "fetch_from_origin")
+        self.mox.StubOutWithMock(BleedingEdgeUpdater, "merge_with_origin")
         self.mox.StubOutWithMock(git.LocalRepository, "fetch")
 
         BleedingEdgeUpdater.is_repo().AndReturn(True)
@@ -363,7 +364,31 @@ class BleedingEdgeUpdaterTest(mox.MoxTestBase):
         BleedingEdgeUpdater.is_repo().AndReturn(True)
         BleedingEdgeUpdater.has_git().AndReturn(True)
 
-        BleedingEdgeUpdater.fetch_from_origin()
+        BleedingEdgeUpdater.fetch_from_origin().AndReturn(True)
+        BleedingEdgeUpdater.merge_with_origin()
+
+        self.mox.ReplayAll()
+
+        updater = BleedingEdgeUpdater(self.__repo)
+        updater.download_update()
+
+    def test_download_update_when_has_git_and_is_repo_fetch_fails(self):
+        """ If the project root is a git repo, and git is available, changes
+        shall be fetched from github. """
+
+        self.mox.StubOutWithMock(BleedingEdgeUpdater, "is_repo")
+        self.mox.StubOutWithMock(BleedingEdgeUpdater, "has_git")
+        self.mox.StubOutWithMock(BleedingEdgeUpdater, "fetch_from_origin")
+        self.mox.StubOutWithMock(BleedingEdgeUpdater, "merge_with_origin")
+        self.mox.StubOutWithMock(git.LocalRepository, "fetch")
+
+        BleedingEdgeUpdater.is_repo().AndReturn(True)
+        BleedingEdgeUpdater.has_git().AndReturn(True)
+
+        BleedingEdgeUpdater.is_repo().AndReturn(True)
+        BleedingEdgeUpdater.has_git().AndReturn(True)
+
+        BleedingEdgeUpdater.fetch_from_origin().AndReturn(False)
 
         self.mox.ReplayAll()
 
@@ -377,6 +402,7 @@ class BleedingEdgeUpdaterTest(mox.MoxTestBase):
         self.mox.StubOutWithMock(BleedingEdgeUpdater, "is_repo")
         self.mox.StubOutWithMock(BleedingEdgeUpdater, "has_git")
         self.mox.StubOutWithMock(BleedingEdgeUpdater, "fetch_from_origin")
+        self.mox.StubOutWithMock(BleedingEdgeUpdater, "merge_with_origin")
         self.mox.StubOutWithMock(BleedingEdgeUpdater, "download_tarball")
         self.mox.StubOutWithMock(git.LocalRepository, "fetch")
 
@@ -400,6 +426,7 @@ class BleedingEdgeUpdaterTest(mox.MoxTestBase):
         self.mox.StubOutWithMock(BleedingEdgeUpdater, "is_repo")
         self.mox.StubOutWithMock(BleedingEdgeUpdater, "has_git")
         self.mox.StubOutWithMock(BleedingEdgeUpdater, "fetch_from_origin")
+        self.mox.StubOutWithMock(BleedingEdgeUpdater, "merge_with_origin")
         self.mox.StubOutWithMock(BleedingEdgeUpdater, "download_tarball")
         self.mox.StubOutWithMock(git.LocalRepository, "fetch")
 
@@ -465,6 +492,43 @@ class BleedingEdgeUpdaterTest(mox.MoxTestBase):
 
         self.assertFalse(updater.fetch_from_origin())
         self.assertFalse(updater.fetch_from_origin())
+
+    def test_mergeing_with_fetched_source_succeeds(self):
+        """ If both merge and stash pop succeeds, true should be returned
+        from merge_with_origin. """
+
+        self.mox.StubOutWithMock(BleedingEdgeUpdater, "is_repo")
+        self.mox.StubOutWithMock(BleedingEdgeUpdater, "has_git")
+        self.mox.StubOutWithMock(git.LocalRepository, "saveStash")
+        self.mox.StubOutWithMock(git.LocalRepository, "merge")
+        self.mox.StubOutWithMock(git.LocalRepository, "popStash")
+
+        BleedingEdgeUpdater.is_repo().AndReturn(True)
+        BleedingEdgeUpdater.has_git().AndReturn(True)
+
+        git.LocalRepository.saveStash()
+        git.LocalRepository.merge("origin/master")
+        git.LocalRepository.popStash()
+
+        self.mox.ReplayAll()
+
+        updater = BleedingEdgeUpdater(self.__repo)
+
+        self.assertTrue(updater.merge_with_origin())
+
+    def test_mergeing_with_fetched_source_merge_fails(self):
+        """ If the merge fails, false shoule be returned from merge_with_origin,
+        and the repo should be reset to the state it was in before the merge
+        attempt. """
+
+        self.fail("Test case not implemented")
+
+    def test_mergeing_with_fetched_source_stash_pop_fails(self):
+        """ If the stash pop fails, false should be returned from
+        merge_with_origin, and the repo should be reset to the state it was in
+        before the merge attempt. """
+
+        self.fail("Test case not implemented")
 
 
 if "__main__" == __name__:

@@ -133,7 +133,8 @@ class BleedingEdgeUpdater(Updater):
         """ Download source code update. """
 
         if self.is_repo() and self.has_git():
-            self.fetch_from_origin()
+            if self.fetch_from_origin():
+                self.merge_with_origin()
         else:
             self.download_tarball()
 
@@ -152,3 +153,18 @@ class BleedingEdgeUpdater(Updater):
         return os.path.join(
             os.path.join("https://github.com", repo),
             "tarball/master")
+
+    def merge_with_origin(self):
+        """ Merge changes fetched from origin. Local changes will be stashed
+        before attempting to merge. """
+
+        try:
+            self.repo.saveStash()
+            self.repo.merge("origin/master")
+            self.repo.popStash()
+        except git.exceptions.GitException:
+            return False
+
+        return True
+
+        pass
