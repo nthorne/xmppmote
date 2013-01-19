@@ -55,6 +55,9 @@ class BleedingEdgeUpdater(Updater):
         self.__project_root = os.path.dirname(
             os.path.abspath(version.__file__))
 
+        # TODO: Do we really want to cache this? If we do, we need
+        #  to make sure that we remember to update the cache whenever
+        # it changes.
         self.local_head_commit_hash = None
         self.origin_head_sha = None
 
@@ -160,9 +163,14 @@ class BleedingEdgeUpdater(Updater):
 
         try:
             self.repo.saveStash()
+        except git.exceptions.GitException:
+            return False
+
+        try:
             self.repo.merge("origin/master")
             self.repo.popStash()
         except git.exceptions.GitException:
+            self.repo.resetHard(self.local_head_commit_hash)
             return False
 
         return True

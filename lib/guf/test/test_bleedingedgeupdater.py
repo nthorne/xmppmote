@@ -521,14 +521,62 @@ class BleedingEdgeUpdaterTest(mox.MoxTestBase):
         and the repo should be reset to the state it was in before the merge
         attempt. """
 
-        self.fail("Test case not implemented")
+        mock_commit = self.mox.CreateMockAnything()
+        mock_commit.hash = self.__mock_local_head_hash
+
+        self.mox.StubOutWithMock(BleedingEdgeUpdater, "is_repo")
+        self.mox.StubOutWithMock(BleedingEdgeUpdater, "has_git")
+        self.mox.StubOutWithMock(git.LocalRepository, "getHead")
+        self.mox.StubOutWithMock(git.LocalRepository, "saveStash")
+        self.mox.StubOutWithMock(git.LocalRepository, "merge")
+        self.mox.StubOutWithMock(git.LocalRepository, "resetHard")
+
+        BleedingEdgeUpdater.is_repo().AndReturn(True)
+        BleedingEdgeUpdater.has_git().AndReturn(True)
+        git.LocalRepository.getHead().AndReturn(mock_commit)
+
+        git.LocalRepository.saveStash()
+        git.LocalRepository.merge("origin/master").AndRaise(
+            git.exceptions.GitException("dang nabit"))
+        git.LocalRepository.resetHard(self.__mock_local_head_hash)
+
+        self.mox.ReplayAll()
+
+        updater = BleedingEdgeUpdater(self.__repo)
+
+        self.assertFalse(updater.merge_with_origin())
 
     def test_mergeing_with_fetched_source_stash_pop_fails(self):
         """ If the stash pop fails, false should be returned from
         merge_with_origin, and the repo should be reset to the state it was in
         before the merge attempt. """
 
-        self.fail("Test case not implemented")
+        mock_commit = self.mox.CreateMockAnything()
+        mock_commit.hash = self.__mock_local_head_hash
+
+        self.mox.StubOutWithMock(BleedingEdgeUpdater, "is_repo")
+        self.mox.StubOutWithMock(BleedingEdgeUpdater, "has_git")
+        self.mox.StubOutWithMock(git.LocalRepository, "getHead")
+        self.mox.StubOutWithMock(git.LocalRepository, "saveStash")
+        self.mox.StubOutWithMock(git.LocalRepository, "merge")
+        self.mox.StubOutWithMock(git.LocalRepository, "popStash")
+        self.mox.StubOutWithMock(git.LocalRepository, "resetHard")
+
+        BleedingEdgeUpdater.is_repo().AndReturn(True)
+        BleedingEdgeUpdater.has_git().AndReturn(True)
+        git.LocalRepository.getHead().AndReturn(mock_commit)
+
+        git.LocalRepository.saveStash()
+        git.LocalRepository.merge("origin/master")
+        git.LocalRepository.popStash().AndRaise(
+            git.exceptions.GitException("dang nabit"))
+        git.LocalRepository.resetHard(self.__mock_local_head_hash)
+
+        self.mox.ReplayAll()
+
+        updater = BleedingEdgeUpdater(self.__repo)
+
+        self.assertFalse(updater.merge_with_origin())
 
 
 if "__main__" == __name__:
