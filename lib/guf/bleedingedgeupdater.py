@@ -55,17 +55,15 @@ class BleedingEdgeUpdater(Updater):
         self.__project_root = os.path.dirname(
             os.path.abspath(version.__file__))
 
-        # TODO: Do we really want to cache this? If we do, we need
-        #  to make sure that we remember to update the cache whenever
-        # it changes.
-        self.local_head_commit_hash = None
         self.origin_head_sha = None
+        self.repo = None
 
         if self.is_repo():
             self.repo = git.LocalRepository(self.__project_root)
 
-            if self.has_git():
-                self.local_head_commit_hash = self.repo.getHead().hash
+    def get_local_head_commit_hash(self):
+        if self.repo and self.has_git():
+            return self.repo.getHead().hash
 
     def is_repo(self):
         """ Test if the project root is a git repo (i.e. has a .git subfolder).
@@ -122,8 +120,10 @@ class BleedingEdgeUpdater(Updater):
         new_version = False
 
         self.origin_head_sha = self.get_origin_head_sha()
+        local_head_commit_hash = self.get_local_head_commit_hash()
+
         if self.origin_head_sha:
-            new_version = self.local_head_commit_hash != self.origin_head_sha
+            new_version = local_head_commit_hash != self.origin_head_sha
 
         return new_version
 
@@ -161,6 +161,8 @@ class BleedingEdgeUpdater(Updater):
         """ Merge changes fetched from origin. Local changes will be stashed
         before attempting to merge. """
 
+        local_head_commit_hash = self.get_local_head_commit_hash()
+
         try:
             self.repo.saveStash()
         except git.exceptions.GitException:
@@ -170,7 +172,7 @@ class BleedingEdgeUpdater(Updater):
             self.repo.merge("origin/master")
             self.repo.popStash()
         except git.exceptions.GitException:
-            self.repo.resetHard(self.local_head_commit_hash)
+            self.repo.resetHard(local_head_commit_hash)
             return False
 
         return True

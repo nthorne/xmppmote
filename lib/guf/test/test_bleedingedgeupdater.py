@@ -86,8 +86,6 @@ class BleedingEdgeUpdaterTest(mox.MoxTestBase):
 
         self.mox.StubOutWithMock(git.LocalRepository, "getGitVersion")
 
-        # This first call is __init__ retrieving HEAD commit hash
-        git.LocalRepository.getGitVersion().AndReturn("1.7.5.4")
         git.LocalRepository.getGitVersion().AndReturn("1.7.5.4")
 
         self.mox.ReplayAll()
@@ -102,7 +100,6 @@ class BleedingEdgeUpdaterTest(mox.MoxTestBase):
         self.mox.StubOutWithMock(git.LocalRepository, "getGitVersion")
 
         # This first call is __init__ retrieving HEAD commit hash
-        git.LocalRepository.getGitVersion().AndReturn("1.7.5.4")
         git.LocalRepository.getGitVersion().AndRaise(
             git.exceptions.GitException("dang nabit"))
 
@@ -146,7 +143,7 @@ class BleedingEdgeUpdaterTest(mox.MoxTestBase):
 
         updater = BleedingEdgeUpdater(self.__repo)
         self.assertEquals(self.__mock_local_head_hash,
-                          updater.local_head_commit_hash)
+                          updater.get_local_head_commit_hash())
 
     def test_getting_local_commit_hash_no_repo(self):
         """ If project root is not a repo, local_head_commit_hash attribute
@@ -163,7 +160,7 @@ class BleedingEdgeUpdaterTest(mox.MoxTestBase):
         self.mox.ReplayAll()
 
         updater = BleedingEdgeUpdater(self.__repo)
-        self.assertEqual(None, updater.local_head_commit_hash)
+        self.assertEqual(None, updater.get_local_head_commit_hash())
 
     def test_getting_local_commit_hash_no_git(self):
         """ If git is not available, local_head_commit_hash attribute should
@@ -182,7 +179,7 @@ class BleedingEdgeUpdaterTest(mox.MoxTestBase):
         self.mox.ReplayAll()
 
         updater = BleedingEdgeUpdater(self.__repo)
-        self.assertEqual(None, updater.local_head_commit_hash)
+        self.assertEqual(None, updater.get_local_head_commit_hash())
 
     def test_getting_origin_head_hash(self):
         """ Sunshine case when querying github for origin/master HEAD SHA. """
@@ -359,7 +356,6 @@ class BleedingEdgeUpdaterTest(mox.MoxTestBase):
         self.mox.StubOutWithMock(git.LocalRepository, "fetch")
 
         BleedingEdgeUpdater.is_repo().AndReturn(True)
-        BleedingEdgeUpdater.has_git().AndReturn(True)
 
         BleedingEdgeUpdater.is_repo().AndReturn(True)
         BleedingEdgeUpdater.has_git().AndReturn(True)
@@ -383,7 +379,6 @@ class BleedingEdgeUpdaterTest(mox.MoxTestBase):
         self.mox.StubOutWithMock(git.LocalRepository, "fetch")
 
         BleedingEdgeUpdater.is_repo().AndReturn(True)
-        BleedingEdgeUpdater.has_git().AndReturn(True)
 
         BleedingEdgeUpdater.is_repo().AndReturn(True)
         BleedingEdgeUpdater.has_git().AndReturn(True)
@@ -407,7 +402,6 @@ class BleedingEdgeUpdaterTest(mox.MoxTestBase):
         self.mox.StubOutWithMock(git.LocalRepository, "fetch")
 
         BleedingEdgeUpdater.is_repo().AndReturn(True)
-        BleedingEdgeUpdater.has_git().AndReturn(True)
 
         BleedingEdgeUpdater.is_repo().AndReturn(True)
         BleedingEdgeUpdater.has_git().AndReturn(False)
@@ -424,14 +418,12 @@ class BleedingEdgeUpdaterTest(mox.MoxTestBase):
         from origin, but rather a source tarball should be downloaded. """
 
         self.mox.StubOutWithMock(BleedingEdgeUpdater, "is_repo")
-        self.mox.StubOutWithMock(BleedingEdgeUpdater, "has_git")
         self.mox.StubOutWithMock(BleedingEdgeUpdater, "fetch_from_origin")
         self.mox.StubOutWithMock(BleedingEdgeUpdater, "merge_with_origin")
         self.mox.StubOutWithMock(BleedingEdgeUpdater, "download_tarball")
         self.mox.StubOutWithMock(git.LocalRepository, "fetch")
 
         BleedingEdgeUpdater.is_repo().AndReturn(True)
-        BleedingEdgeUpdater.has_git().AndReturn(True)
 
         BleedingEdgeUpdater.is_repo().AndReturn(False)
 
@@ -459,11 +451,9 @@ class BleedingEdgeUpdaterTest(mox.MoxTestBase):
         the tree is a repo. """
 
         self.mox.StubOutWithMock(BleedingEdgeUpdater, "is_repo")
-        self.mox.StubOutWithMock(BleedingEdgeUpdater, "has_git")
         self.mox.StubOutWithMock(git.LocalRepository, "fetch")
 
         BleedingEdgeUpdater.is_repo().AndReturn(True)
-        BleedingEdgeUpdater.has_git().AndReturn(True)
 
         git.LocalRepository.fetch()
 
@@ -476,11 +466,9 @@ class BleedingEdgeUpdaterTest(mox.MoxTestBase):
         fetch_from_origin should return false. """
 
         self.mox.StubOutWithMock(BleedingEdgeUpdater, "is_repo")
-        self.mox.StubOutWithMock(BleedingEdgeUpdater, "has_git")
         self.mox.StubOutWithMock(git.LocalRepository, "fetch")
 
         BleedingEdgeUpdater.is_repo().AndReturn(True)
-        BleedingEdgeUpdater.has_git().AndReturn(True)
 
         git.LocalRepository.fetch().AndRaise(AssertionError)
 
