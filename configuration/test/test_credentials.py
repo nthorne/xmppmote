@@ -20,7 +20,7 @@
 """ This module tests the credentials module. """
 
 # we import the builtin module here, since we need to refer to it explicitly,
-# rather than by __builtins__ when we overload open and raw_input, since
+# rather than by __builtins__ when we stub open and raw_input, since
 # __builtins__ refers to the module when this script is a main script, and to a
 # dict when this script is not a main script..
 import __builtin__
@@ -39,6 +39,7 @@ from ConfigParser import NoOptionError
 from configurationparser import ConfigurationParser
 
 import unittest
+
 
 class CredentialsTest(mox.MoxTestBase):
     """ Testing the credentials module """
@@ -63,7 +64,6 @@ class CredentialsTest(mox.MoxTestBase):
         self.mox.ReplayAll()
 
         self.assertEquals((username, password), credentials.get_credentials())
-
 
     def test_get_credentials_missing_section(self):
         """ Test reading the credentials from a configuration file where the
@@ -97,7 +97,6 @@ class CredentialsTest(mox.MoxTestBase):
 
         self.assertEquals((username, password), credentials.get_credentials())
 
-
     def test_get_credentials_missing_username(self):
         """ Test reading the credentials from a configuration file where the
         username option is missing. """
@@ -127,7 +126,6 @@ class CredentialsTest(mox.MoxTestBase):
         self.mox.ReplayAll()
 
         self.assertEquals((username, password), credentials.get_credentials())
-
 
     def test_get_credentials_missing_password(self):
         """ Test reading the credentials from a configuration file where the
