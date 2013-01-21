@@ -38,7 +38,7 @@ class Client(borg.make_borg(), JabberClient, object):
     """ This type subclasses the JabberClient type, in order to provde
         protocol-level setup. """
 
-    def __init__(self, jid = None, password = None):
+    def __init__(self, jid=None, password=None):
         super(Client, self).__init__()
 
         if None != jid and None != password:
@@ -47,8 +47,8 @@ class Client(borg.make_borg(), JabberClient, object):
                 jid = JID(jid.node, jid.domain, "XMPPMote")
 
             JabberClient.__init__(self, jid, password,
-                disco_name = "XMPPMote", disco_type = "bot",
-                tls_settings = None)
+                                  disco_name="XMPPMote", disco_type="bot",
+                                  tls_settings=None)
 
             self.interface_providers = [
                 VersionHandler(),
@@ -65,9 +65,9 @@ class Client(borg.make_borg(), JabberClient, object):
             name = item.name
         else:
             name = u""
-        self.__logger.info (u'%s "%s" subscription=%s groups=%s'
-            % (unicode(item.jid), name, item.subscription,
-            u",".join(item.groups)) )
+        self.__logger.info(u'%s "%s" subscription=%s groups=%s'
+                           % (unicode(item.jid), name, item.subscription,
+                              u",".join(item.groups)))
 
     def roster_updated(self, item=None):
         """ This method is called upon roster updates. """
@@ -80,23 +80,23 @@ class Client(borg.make_borg(), JabberClient, object):
             self.log_roster_item(item)
 
     def disconnect(self):
-        """ Overloaded in order to catch attempts to disconnect when the client
+        """ Overridden in order to catch attempts to disconnect when the client
         has not even been initialised. """
 
         if hasattr(self, 'lock'):
             JabberClient.disconnect(self)
 
-    def change_status(self, msg = u"awaiting command", available = True):
+    def change_status(self, msg=u"awaiting command", available=True):
         """ Helper function to change the bot availability status. """
         if available:
             presence_stanza = Presence(
-                stanza_type = u"available",
-                status = msg
+                stanza_type=u"available",
+                status=msg
             )
         else:
             presence_stanza = Presence(
-                stanza_type = u"unavailable",
-                status = msg
+                stanza_type=u"unavailable",
+                status=msg
             )
 
         if hasattr(self, "lock"):
