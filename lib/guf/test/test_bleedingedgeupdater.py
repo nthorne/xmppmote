@@ -45,6 +45,7 @@ class BleedingEdgeUpdaterTest(mox.MoxTestBase):
     __tarball_url = "https://github.com/foo/bar/tarball/master"
     __mock_local_head_hash = "local"
     __mock_origin_head_sha = "origin"
+    __tarball_filename = "/tmp/guf.tar.gz"
 
     def test_is_repo_when_is_repo(self):
         """ If project root contains a .git directory, make sure that is_repo
@@ -565,6 +566,77 @@ class BleedingEdgeUpdaterTest(mox.MoxTestBase):
         updater = BleedingEdgeUpdater(self.__repo)
 
         self.assertFalse(updater.merge_with_origin())
+
+    def test_download_tarball_succeeds(self):
+        """ If download_tarball returns a valid, existing, filename,
+        the download is considered succeeded, and an attempt to install the
+        update will be performed. """
+
+        self.mox.StubOutWithMock(BleedingEdgeUpdater, "is_repo")
+        self.mox.StubOutWithMock(BleedingEdgeUpdater, "fetch_from_origin")
+        self.mox.StubOutWithMock(BleedingEdgeUpdater, "merge_with_origin")
+        self.mox.StubOutWithMock(BleedingEdgeUpdater, "download_tarball")
+        self.mox.StubOutWithMock(BleedingEdgeUpdater, "update_from_tarball")
+        self.mox.StubOutWithMock(os.path, "isfile")
+
+        BleedingEdgeUpdater.is_repo().AndReturn(True)
+
+        BleedingEdgeUpdater.is_repo().AndReturn(False)
+
+        BleedingEdgeUpdater.download_tarball().AndReturn(self.__tarball_filename)
+        os.path.isfile(self.__tarball_filename).AndReturn(True)
+        BleedingEdgeUpdater.update_from_tarball(self.__tarball_filename)
+
+        self.mox.ReplayAll()
+
+        updater = BleedingEdgeUpdater(self.__repo)
+        updater.download_update()
+
+    def test_download_tarball_fails(self):
+        """ If download_tarball returns None, the download attempt will be
+        considered failed, and the update attempt should be aborted. """
+
+        self.mox.StubOutWithMock(BleedingEdgeUpdater, "is_repo")
+        self.mox.StubOutWithMock(BleedingEdgeUpdater, "fetch_from_origin")
+        self.mox.StubOutWithMock(BleedingEdgeUpdater, "merge_with_origin")
+        self.mox.StubOutWithMock(BleedingEdgeUpdater, "download_tarball")
+        self.mox.StubOutWithMock(BleedingEdgeUpdater, "update_from_tarball")
+
+        BleedingEdgeUpdater.is_repo().AndReturn(True)
+
+        BleedingEdgeUpdater.is_repo().AndReturn(False)
+
+        BleedingEdgeUpdater.download_tarball()
+
+        self.mox.ReplayAll()
+
+        updater = BleedingEdgeUpdater(self.__repo)
+        updater.download_update()
+
+    def test_download_tarball_succeeds_but_no_tarball(self):
+        """ If download_tarball returns a non-zero string, but the file
+        pointed to by that string does not exists, the update should be
+        aborted. """
+
+        self.mox.StubOutWithMock(BleedingEdgeUpdater, "is_repo")
+        self.mox.StubOutWithMock(BleedingEdgeUpdater, "fetch_from_origin")
+        self.mox.StubOutWithMock(BleedingEdgeUpdater, "merge_with_origin")
+        self.mox.StubOutWithMock(BleedingEdgeUpdater, "download_tarball")
+        self.mox.StubOutWithMock(BleedingEdgeUpdater, "update_from_tarball")
+        self.mox.StubOutWithMock(os.path, "isfile")
+
+        BleedingEdgeUpdater.is_repo().AndReturn(True)
+
+        BleedingEdgeUpdater.is_repo().AndReturn(False)
+
+        BleedingEdgeUpdater.download_tarball().AndReturn(self.__tarball_filename)
+
+        os.path.isfile(self.__tarball_filename).AndReturn(False)
+
+        self.mox.ReplayAll()
+
+        updater = BleedingEdgeUpdater(self.__repo)
+        updater.download_update()
 
 
 if "__main__" == __name__:

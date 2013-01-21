@@ -139,7 +139,9 @@ class BleedingEdgeUpdater(Updater):
             if self.fetch_from_origin():
                 self.merge_with_origin()
         else:
-            self.download_tarball()
+            tarball = self.download_tarball()
+            if tarball and os.path.isfile(tarball):
+                self.update_from_tarball(tarball)
 
     def fetch_from_origin(self):
         """ Fetch software update from origin. """

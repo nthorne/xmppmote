@@ -35,6 +35,7 @@ class Updater(object):
         self.__repo = repo
         self.__update_dir = update_dir
 
+    # TODO: Rename this one, since its purpose is download and update
     def download_update(self):
         """ Download an update using the prefered method (default is tarball
         download). """
@@ -71,7 +72,7 @@ class Updater(object):
                 with open(local_filename, "wb") as local_file:
                     local_file.write(url_object.read())
         except urllib2.HTTPError, error:
-            logger.info(u"%d encountered when attempting to download %s" % 
+            logger.info(u"%d encountered when attempting to download %s" %
                         (error.getcode(), tarball_url))
         except urllib2.URLError:
             logger.info(u"Failed to download %s" % tarball_url)
@@ -79,6 +80,12 @@ class Updater(object):
             logger.info(u"Missing urlopen handler for %s" % tarball_url)
 
         return local_filename
+
+    def update_from_tarball(self, tarball):
+        """ This method will update the source tree from the tarball named in
+        tarball. """
+
+        pass
 
     def get_tarball_url(self, repo):
         """ This method is to be overriden by subtypes, in order to fetch the
