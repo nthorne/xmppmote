@@ -436,7 +436,7 @@ class BleedingEdgeUpdaterTest(mox.MoxTestBase):
         updater.download_update()
 
     def test_getting_tarball_url(self):
-        """ Make sure that the get_tarball url method is overloaded and returns
+        """ Make sure that the get_tarball url method is overridden and returns
         a sane URL. """
 
         self.mox.ReplayAll()
