@@ -32,7 +32,6 @@ from updater import Updater
 
 import git
 import git.exceptions
-import version
 import urllib2
 import json
 import logging
@@ -52,14 +51,12 @@ class BleedingEdgeUpdater(Updater):
                 os.path.join('https://api.github.com/repos', repo),
                 'commits'),
             'HEAD')
-        self.__project_root = os.path.dirname(
-            os.path.abspath(version.__file__))
 
         self.origin_head_sha = None
         self.repo = None
 
         if self.is_repo():
-            self.repo = git.LocalRepository(self.__project_root)
+            self.repo = git.LocalRepository(self.project_root)
 
     def get_local_head_commit_hash(self):
         if self.repo and self.has_git():
@@ -69,7 +66,7 @@ class BleedingEdgeUpdater(Updater):
         """ Test if the project root is a git repo (i.e. has a .git subfolder).
         """
 
-        return os.path.isdir(os.path.join(self.__project_root, ".git"))
+        return os.path.isdir(os.path.join(self.project_root, ".git"))
 
     def has_git(self):
         """ Test if git v1 is available. """

@@ -23,17 +23,28 @@ Updater is the supertype for the StableUpdater and BleedingEdgeUpdater, and
 provides common methods (e.g. extracting downloaded tarball, replacing
 software). """
 
+import sys
+import os
+
+sys.path.append(os.path.abspath("../../.."))
+
 import logging
 import os
 import urllib2
+
+import version
+
 
 class Updater(object):
     """ Updater contains common methods used by the StableUpdater and
     BleedingEdgeUpdater. """
 
-    def __init__(self, repo, update_dir = "/tmp"):
+    def __init__(self, repo, update_dir="/tmp"):
         self.__repo = repo
         self.__update_dir = update_dir
+
+        self.project_root = os.path.dirname(
+            os.path.abspath(version.__file__))
 
     # TODO: Rename this one, since its purpose is download and update
     def download_update(self):
@@ -92,4 +103,3 @@ class Updater(object):
         appropriate tarball. """
 
         raise Exception("Method not overridden")
-
